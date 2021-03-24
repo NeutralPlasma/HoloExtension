@@ -1,0 +1,19 @@
+name: HoloExtension
+main: eu.virtusdevelops.holoextension.HoloExtension
+version: @version@
+api-version: "1.13"
+author: NeutralPlasma
+
+depend: [Vault, ProtocolLib]
+softdepend:
+  - PlaceholderAPI
+  - HolographicDisplays
+  - SimpleHolograms
+
+
+commands:
+  he:
+    aliases: [hpe]
+    permission: holoextension.command.main
+    usage: /<command>
+
