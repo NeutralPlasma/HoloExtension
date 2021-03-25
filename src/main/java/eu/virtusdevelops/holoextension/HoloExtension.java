@@ -20,6 +20,8 @@ public class HoloExtension extends JavaPlugin {
         // The enable stuff.
         setupEconomy();
 
+
+        // Testing purposes.
         Module test = new BaltopV1(false);
         test.onEnable(this, 0L, 200L);
         moduleList.add(test);

@@ -11,4 +11,6 @@ public abstract class Module extends BukkitRunnable {
     public void onDisable(){}
     public double getValue(int positon){return -1;}
     public String getPlayer(int position){return "";}
+
+    public void registerPlaceholders(){}
 }
