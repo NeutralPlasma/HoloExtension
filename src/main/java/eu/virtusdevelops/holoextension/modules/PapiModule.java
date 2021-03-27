@@ -1,11 +1,8 @@
-package eu.virtusdevelops.holoextension.modules.baltops;
+package eu.virtusdevelops.holoextension.modules;
 
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
-import eu.virtusdevelops.holoextension.modules.Module;
-import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.virtuscore.VirtusCore;
-import eu.virtusdevelops.virtuscore.utils.TextUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BaltopV1 extends Module {
+public class PapiModule extends Module {
 
     private HoloExtension plugin;
 
@@ -29,7 +26,7 @@ public class BaltopV1 extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type){
+    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type){
         super(updateOffline, name, plugin, type);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
@@ -55,22 +52,21 @@ public class BaltopV1 extends Module {
 
     @Override
     public void run() {
-        Economy economy = plugin.getEcon();
-        // Load the online players balances
+        // Load the online players
         for(Player player : Bukkit.getOnlinePlayers()){
             try{
-                values.put(player.getUniqueId(), economy.getBalance(player));
+                values.put(player.getUniqueId(), Double.valueOf(PlaceholderAPI.setPlaceholders(player, name)));
             }catch (Exception ignored){ }
         }
 
-        // Load the offline players balance if enabled.
+        // Load the offline players  if enabled.
         if(updateOffline) {
             if (counter >= 10) {
                 counter = 0;
                 VirtusCore.console().sendMessage("Updating offline.");
                 for(OfflinePlayer player : Bukkit.getOfflinePlayers()){
                     try{
-                        values.put(player.getUniqueId(), economy.getBalance(player));
+                        values.put(player.getUniqueId(), Double.valueOf(PlaceholderAPI.setPlaceholders(player, name)));
                         VirtusCore.console().sendMessage("Updating: " + player.getName());
                     }catch (Exception ignored){}
                 }
@@ -95,8 +91,10 @@ public class BaltopV1 extends Module {
     @Override
     public double getValue(int position) {
         if(users.size() >= position){
+            Player player = Bukkit.getPlayer(users.get(position-1));
+            if(player != null){ return Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name));}
+            else{ Double.parseDouble(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(users.get(position-1)), name));}
 
-            return plugin.getEcon().getBalance(Bukkit.getOfflinePlayer(users.get(position-1) ));
         }
         return 0.0;
     }

@@ -1,6 +1,8 @@
 package eu.virtusdevelops.holoextension;
 
 import eu.virtusdevelops.holoextension.modules.Module;
+import eu.virtusdevelops.holoextension.modules.ModuleType;
+import eu.virtusdevelops.holoextension.modules.PapiModule;
 import eu.virtusdevelops.holoextension.modules.baltops.BaltopV1;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -22,10 +24,13 @@ public class HoloExtension extends JavaPlugin {
 
 
         // Testing purposes.
-        Module test = new BaltopV1(true, "baltop", this);
+        Module test = new BaltopV1(true, "baltop", this, ModuleType.NUMBER);
         test.onEnable( 0L, 40L);
-        moduleList.add(test);
 
+        Module test2 = new PapiModule(true, "%statistic_seconds_played%", this, ModuleType.TIME);
+        test2.onEnable(0L, 40L);
+        moduleList.add(test);
+        moduleList.add(test2);
     }
 
 

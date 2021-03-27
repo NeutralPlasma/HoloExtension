@@ -2,6 +2,7 @@ package eu.virtusdevelops.holoextension.modules;
 
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
+import eu.virtusdevelops.holoextension.utils.TextUtils;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -10,11 +11,13 @@ import java.util.List;
 public abstract class Module extends BukkitRunnable {
     public final String name;
     private HoloExtension plugin;
+    private ModuleType type;
 
 
     private List<String> placeholders = new ArrayList<>();
 
-    public Module(boolean updateOffline, String name, HoloExtension plugin){
+    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleType type){
+        this.type = type;
         this.name = name;
         this.plugin = plugin;
     }
@@ -31,8 +34,12 @@ public abstract class Module extends BukkitRunnable {
             int finalI = i;
             String placeholder = "{he-" + name + "-" + i + "-value}";
             HologramsAPI.registerPlaceholder(plugin, placeholder, delay, () -> {
-                // TODO: Add formaters.
-                return "" + getValue(finalI);
+                // TODO: Add balance formaters.
+                if(type == ModuleType.NUMBER){
+                    return TextUtils.formatValue(2, getValue(finalI));
+                }else{
+                    return TextUtils.formatTime(getValue(finalI) * 1000);
+                }
             });
             placeholders.add(placeholder);
             String placeholder2 = "{he-" + name + "-" + i + "-user}";
