@@ -31,7 +31,9 @@ dependencies {
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.0"
     compileOnly 'me.clip:placeholderapi:v2.10.5'
     compileOnly group: 'com.gmail.filoghost.holographicdisplays', name: 'holographicdisplays-api', version: '2.4.0'
-    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    compileOnly ("com.github.MilkBowl:VaultAPI:1.7") {
+        transitive = false
+    }
     compileOnly fileTree(dir: 'libs', include: '*.jar')
     compile fileTree(dir: 'included', include: '*.jar')
 }

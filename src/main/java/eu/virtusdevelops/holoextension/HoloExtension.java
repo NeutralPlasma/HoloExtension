@@ -22,8 +22,8 @@ public class HoloExtension extends JavaPlugin {
 
 
         // Testing purposes.
-        Module test = new BaltopV1(false);
-        test.onEnable(this, 0L, 200L);
+        Module test = new BaltopV1(true, "baltop", this);
+        test.onEnable( 0L, 40L);
         moduleList.add(test);
 
     }

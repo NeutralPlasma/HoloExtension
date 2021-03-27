@@ -1,0 +1,16 @@
+modules:
+  baltop:
+    interval: 200L
+    noplayer: "unknown"
+    updateOffline: true
+    size: 10
+
+
+  papi:
+    modules:
+
+      "%player_name%":  # Change this crap
+          interval: 200L
+          noplayer: "unknown"
+          updateOffline: true
+          size: 10
