@@ -1,11 +1,12 @@
 package eu.virtusdevelops.holoextension;
 
 import eu.virtusdevelops.holoextension.modules.Module;
+import eu.virtusdevelops.holoextension.modules.ModuleManager;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.holoextension.modules.PapiModule;
 import eu.virtusdevelops.holoextension.modules.baltops.BaltopV1;
+import eu.virtusdevelops.holoextension.storage.Cache;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,29 +16,34 @@ import java.util.List;
 public class HoloExtension extends JavaPlugin {
 
     private Economy econ;
-    private List<Module> moduleList = new ArrayList<>();
+    private ModuleManager moduleManager;
+    private Cache cache;
 
     @Override
     public void onEnable() {
         // The enable stuff.
         setupEconomy();
+        this.saveDefaultConfig();
 
+        // Cache
+        cache = new Cache(this);
+        cache.setup();
 
-        // Testing purposes.
-        Module test = new BaltopV1(true, "baltop", this, ModuleType.NUMBER);
-        test.onEnable( 0L, 40L);
+        // Module manager
+        moduleManager = new ModuleManager(this, cache);
+        moduleManager.reload();
+    }
+    
 
-        Module test2 = new PapiModule(true, "%statistic_seconds_played%", this, ModuleType.TIME);
-        test2.onEnable(0L, 40L);
-        moduleList.add(test);
-        moduleList.add(test2);
+    // Reload
+    public void reload(){
+        this.reloadConfig();
+        cache.reload();
+        moduleManager.reload();
     }
 
 
-
-
     // Vault stuff down here..
-
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;

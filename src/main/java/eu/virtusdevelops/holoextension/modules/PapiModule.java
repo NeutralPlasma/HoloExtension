@@ -26,17 +26,17 @@ public class PapiModule extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type){
-        super(updateOffline, name, plugin, type);
+    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size){
+        super(updateOffline, name, plugin, type, delay, repeat, size);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
     }
 
     @Override
-    public void onEnable(long delay, long schedule) {
-        this.runTaskTimerAsynchronously(this.plugin, delay, schedule);
-        registerPlaceholders(2, 10);
-        super.onEnable(delay, schedule);
+    public void onEnable() {
+        this.runTaskTimerAsynchronously(this.plugin, delay, repeat);
+        registerPlaceholders(10);
+        super.onEnable();
     }
 
     @Override

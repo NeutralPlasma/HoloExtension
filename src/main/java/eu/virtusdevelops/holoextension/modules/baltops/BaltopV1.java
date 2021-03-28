@@ -1,11 +1,9 @@
 package eu.virtusdevelops.holoextension.modules.baltops;
 
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.virtuscore.VirtusCore;
-import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -29,27 +27,28 @@ public class BaltopV1 extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type){
-        super(updateOffline, name, plugin, type);
+    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size){
+        super(updateOffline, name, plugin, type, delay, repeat, size);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
     }
 
     @Override
-    public void onEnable(long delay, long schedule) {
-        this.runTaskTimerAsynchronously(this.plugin, delay, schedule);
-        registerPlaceholders(2, 10);
-        super.onEnable(delay, schedule);
+    public void onEnable() {
+        this.runTaskTimerAsynchronously(this.plugin, delay, repeat);
+        registerPlaceholders(10);
+        super.onEnable();
     }
 
     @Override
     public void onDisable() {
         this.cancel();
-        values.clear();
-        sorted.clear();
-        users.clear();
-
         unregisterPlaceholders();
+
+        values = null;
+        sorted = null;
+        users = null;
+
         super.onDisable();
     }
 
