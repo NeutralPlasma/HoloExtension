@@ -36,7 +36,9 @@ public class ModuleManager {
                 ModuleType.NUMBER,
                 0,
                 config.getLong("modules.baltop.interval"),
-                config.getInt(("modules.baltop.size"))
+                config.getInt(("modules.baltop.size")),
+                config.getBoolean("modules.baltop.enabled"),
+                config.getString("modules.baltop.noplayer")
         );
         moduleList.add(baltopV1);
 
@@ -50,18 +52,28 @@ public class ModuleManager {
                     ModuleType.valueOf(section.getString("type").toUpperCase()),
                     0L,
                     section.getLong("interval"),
-                    section.getInt("size")
+                    section.getInt("size"),
+                    section.getBoolean("enabled"),
+                    cache,
+                    section.getString("noplayer")
             );
             moduleList.add(papiModule);
         }
 
-
-
-
-
         for (Module module : moduleList){
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &aEnabling " + module.name + "... " + module.repeat));
-            module.onEnable();
+            if(module.isEnabled()) {
+                VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &aEnabling " + module.name + "... " + module.repeat));
+                module.onEnable();
+            }
         }
+    }
+
+    public Module getModule(String name){
+        for(Module module: moduleList){
+            if(module.name.equals(name)){
+                return module;
+            }
+        }
+        return null;
     }
 }

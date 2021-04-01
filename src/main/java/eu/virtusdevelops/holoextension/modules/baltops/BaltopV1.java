@@ -3,7 +3,6 @@ package eu.virtusdevelops.holoextension.modules.baltops;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
-import eu.virtusdevelops.virtuscore.VirtusCore;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -20,17 +19,17 @@ public class BaltopV1 extends Module {
     private HashMap<UUID, Double> sorted = new HashMap<>();
     private List<UUID> users = new ArrayList<>();
 
-
     private int counter = 10;
     private boolean updateOffline;
 
     private static String RETURN_ON_NULL = "";
 
 
-    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size){
-        super(updateOffline, name, plugin, type, delay, repeat, size);
+    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean enabled, String callback){
+        super(updateOffline, name, plugin, type, delay, repeat, size, enabled, callback);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
+        RETURN_ON_NULL = callback;
     }
 
     @Override
@@ -66,11 +65,9 @@ public class BaltopV1 extends Module {
         if(updateOffline) {
             if (counter >= 10) {
                 counter = 0;
-                VirtusCore.console().sendMessage("Updating offline.");
                 for(OfflinePlayer player : Bukkit.getOfflinePlayers()){
                     try{
                         values.put(player.getUniqueId(), economy.getBalance(player));
-                        VirtusCore.console().sendMessage("Updating: " + player.getName());
                     }catch (Exception ignored){}
                 }
             }

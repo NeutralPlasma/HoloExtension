@@ -1,17 +1,18 @@
 package eu.virtusdevelops.holoextension;
 
-import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
-import eu.virtusdevelops.holoextension.modules.ModuleType;
-import eu.virtusdevelops.holoextension.modules.PapiModule;
-import eu.virtusdevelops.holoextension.modules.baltops.BaltopV1;
 import eu.virtusdevelops.holoextension.storage.Cache;
+import eu.virtusdevelops.simpleholograms.listeners.PlayerJoinEvent;
+import eu.virtusdevelops.virtuscore.VirtusCore;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
+
+
 
 public class HoloExtension extends JavaPlugin {
 
@@ -33,7 +34,7 @@ public class HoloExtension extends JavaPlugin {
         moduleManager = new ModuleManager(this, cache);
         moduleManager.reload();
     }
-    
+
 
     // Reload
     public void reload(){

@@ -13,19 +13,22 @@ public abstract class Module extends BukkitRunnable {
     public long delay;
     public long repeat;
     public int size;
+    private boolean isEnabled;
     private HoloExtension plugin;
     private ModuleType type;
 
 
+
     private List<String> placeholders = new ArrayList<>();
 
-    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size){
+    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean isEnabled, String callback){
         this.type = type;
         this.name = name;
         this.plugin = plugin;
         this.delay = delay;
         this.repeat = repeat;
         this.size = size;
+        this.isEnabled = isEnabled;
     }
 
     public void onEnable(){ }
@@ -58,6 +61,14 @@ public abstract class Module extends BukkitRunnable {
         for(String placeholder : placeholders){
             HologramsAPI.unregisterPlaceholder(plugin, placeholder);
         }
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     // TODO: add heads and signs implementation

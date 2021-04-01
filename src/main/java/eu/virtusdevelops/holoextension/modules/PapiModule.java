@@ -1,6 +1,7 @@
 package eu.virtusdevelops.holoextension.modules;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
+import eu.virtusdevelops.holoextension.storage.Cache;
 import eu.virtusdevelops.virtuscore.VirtusCore;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.economy.Economy;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class PapiModule extends Module {
 
     private HoloExtension plugin;
+    private Cache cache;
 
     private HashMap<UUID, Double> values = new HashMap<>();
     private HashMap<UUID, Double> sorted = new HashMap<>();
@@ -26,16 +28,19 @@ public class PapiModule extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size){
-        super(updateOffline, name, plugin, type, delay, repeat, size);
+    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean enabled, Cache cache, String callback){
+        super(updateOffline, name, plugin, type, delay, repeat, size, enabled, callback);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
+        this.cache = cache;
+        RETURN_ON_NULL = callback;
     }
 
     @Override
     public void onEnable() {
         this.runTaskTimerAsynchronously(this.plugin, delay, repeat);
         registerPlaceholders(10);
+        cache();
         super.onEnable();
     }
 
@@ -48,6 +53,18 @@ public class PapiModule extends Module {
 
         unregisterPlaceholders();
         super.onDisable();
+    }
+
+    public void cache(){
+        // load all the cached stuff
+        for(OfflinePlayer player : Bukkit.getOfflinePlayers()){
+            if(cache.get().contains("cache." + name + "." + player.getUniqueId() + ".value")){
+                values.put(player.getUniqueId(), cache.get().getDouble("cache." + name + "." + player.getUniqueId() + ".value"));
+            }else{
+                cache.get().set("cache." + name + "." + player.getUniqueId() + ".value", 0.0);
+                values.put(player.getUniqueId(), 0.0);
+            }
+        }
     }
 
     @Override
@@ -63,15 +80,18 @@ public class PapiModule extends Module {
         if(updateOffline) {
             if (counter >= 10) {
                 counter = 0;
-                VirtusCore.console().sendMessage("Updating offline.");
                 for(OfflinePlayer player : Bukkit.getOfflinePlayers()){
                     try{
                         values.put(player.getUniqueId(), Double.valueOf(PlaceholderAPI.setPlaceholders(player, name)));
-                        VirtusCore.console().sendMessage("Updating: " + player.getName());
                     }catch (Exception ignored){}
                 }
             }
             counter++;
+
+            // cache save stuff.
+            for(UUID uuid : values.keySet()){
+                cache.get().set("cache." + name + "." + uuid + ".value", values.get(uuid));
+            }
         }
 
 
@@ -91,10 +111,7 @@ public class PapiModule extends Module {
     @Override
     public double getValue(int position) {
         if(users.size() >= position){
-            Player player = Bukkit.getPlayer(users.get(position-1));
-            if(player != null){ return Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name));}
-            else{ Double.parseDouble(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(users.get(position-1)), name));}
-
+            return values.get(users.get(position-1));
         }
         return 0.0;
     }

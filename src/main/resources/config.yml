@@ -4,6 +4,7 @@ modules:
     noplayer: "unknown"
     updateOffline: true
     size: 10
+    enabled: true
 
 
 papi:
@@ -13,3 +14,4 @@ papi:
     updateOffline: true
     size: 10
     type: "time"
+    enabled: true

@@ -13,7 +13,7 @@ softdepend:
 
 commands:
   he:
-    aliases: [hpe]
+    aliases: [he]
     permission: holoextension.command.main
     usage: /<command>
 
