@@ -151,7 +151,7 @@ public class ModuleGUI {
 
 
         // Create hologram
-        ItemStack hologram = GuiUtils.editItem(Material.COMMAND_BLOCK, "Create hologram", String.valueOf(module.getSize()));
+        ItemStack hologram = GuiUtils.plainItem(Material.COMMAND_BLOCK, "&8[&6Create hologram&8]");
         Icon hologram_icon = new Icon(hologram);
         hologram_icon.addClickAction((player) -> {
 

@@ -68,6 +68,20 @@ public class ModuleManager {
         }
     }
 
+    public void createNewPapiModule(String name, ModuleType type){
+        String path = "papi." + name;
+        plugin.getConfig().set(path + ".updateOffline", true);
+        plugin.getConfig().set(path + ".type", type.toString());
+        plugin.getConfig().set(path + ".interval", 200L);
+        plugin.getConfig().set(path + ".size", 10);
+        plugin.getConfig().set(path + ".enabled", true);
+        plugin.getConfig().set(path + ".noplayer", "NULL");
+        plugin.saveConfig();
+        Module module = new PapiModule(true, name, plugin, type ,0L, 200L, 10, true, cache, "NULL" );
+        moduleList.add(module);
+        module.onEnable();
+    }
+
 
     public boolean resetModule(Module module, boolean papi){
         ConfigurationSection config = plugin.getConfig();

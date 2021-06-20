@@ -24,6 +24,16 @@ public class GuiUtils {
         return item;
     }
 
+    public static ItemStack plainItem(Material mat, String name){
+        ItemStack item = new ItemStack(mat);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(TextUtils.colorFormat(name));
+        List<String> lore = getEmptyLore();
+        meta.setLore(TextUtils.colorFormatList(lore));
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public static ItemStack editItem(Material mat, String name, String current){
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();

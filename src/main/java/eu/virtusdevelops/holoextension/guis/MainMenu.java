@@ -3,11 +3,15 @@ package eu.virtusdevelops.holoextension.guis;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
+import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.holoextension.modules.PapiModule;
+import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
 import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -76,13 +80,57 @@ public class MainMenu {
             counter++;
         }
 
-        // TODO: add pagination stuff
+        // Pagination
         paginatorItems();
 
+
+        // TODO: add item for creating new papi module.
+        ItemStack papi_create_item = GuiUtils.plainItem(Material.COMMAND_BLOCK, "&8[&6Create leaderboard&8]");
+        Icon papi_create_icon = new Icon(papi_create_item);
+        papi_create_icon.addClickAction((player1 -> {
+            //load();
+            new AnvilGUI.Builder()
+                    .plugin(plugin)
+                    .text("<PLACEHOLDER>")
+                    .onClose(HumanEntity::closeInventory)
+                    .onComplete((player3, s) -> {
+                        if (s.contains(" ") || s.isBlank()){
+                            return AnvilGUI.Response.text("Incorrect...");
+                        }else{
+                            finalConstructionMenu(s);
+                        }
+                        return AnvilGUI.Response.close();
+                    }).open(player);
+        }));
+        gui.setIcon(44, papi_create_icon);
 
         player.openInventory(gui.getInventory());
         bigger = false;
     }
+
+    // GUIS
+    private void finalConstructionMenu(String name){
+        new AnvilGUI.Builder()
+                .plugin(plugin)
+                .text("<TIME:NUMBER>")
+                .onClose(player -> {
+                    player.closeInventory();
+                    load();
+                })
+                .onComplete((player, s) -> {
+                    try{
+                        ModuleType type = ModuleType.valueOf(s);
+                        moduleManager.createNewPapiModule(name, type);
+                        return AnvilGUI.Response.close();
+                    }catch (Exception error){
+                        return AnvilGUI.Response.text("Incorrect...");
+                    }
+                }).open(player);
+    }
+
+
+    // Other
+
 
     public void paginatorItems(){
         if(currentPage > 0){

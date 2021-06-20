@@ -51,11 +51,11 @@ dependencies {
     compileOnly ("com.github.MilkBowl:VaultAPI:1.7") {
         transitive = false
     }
+    compileOnly group: "spigotmc", name: "spigot", version: "1.16"
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
 
     implementation group: "eu.virtusdevelops", name: "VirtusCore", version: "1.0.8.3"
     implementation group: 'net.wesjd', name: 'anvilgui', version: '1.5.1-SNAPSHOT'
-
-    compileOnly fileTree(dir: 'libs', include: '*.jar')
     implementation fileTree(dir: 'included', include: '*.jar')
 }
 
