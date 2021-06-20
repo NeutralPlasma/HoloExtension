@@ -9,6 +9,7 @@ import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -147,6 +148,40 @@ public class ModuleGUI {
                     }).open(player);
         });
         gui.setIcon(29, size_icon);
+
+
+        // Create hologram
+        ItemStack hologram = GuiUtils.editItem(Material.COMMAND_BLOCK, "Create hologram", String.valueOf(module.getSize()));
+        Icon hologram_icon = new Icon(hologram);
+        hologram_icon.addClickAction((player) -> {
+
+            new AnvilGUI.Builder()
+                    .plugin(plugin)
+                    .text("<NAME>")
+                    .onClose(HumanEntity::closeInventory)
+                    .onComplete((player1, s) -> {
+                        // DISPATCH THE CREATION COMMANDS
+                        if(s.contains(" ")){
+                            player.sendMessage(TextUtils.colorFormat("&cYou can't use spaces in hologram name."));
+                            return AnvilGUI.Response.close();
+                        }
+
+                        player.performCommand("hd create " + s);
+                        for(int i = 1; i <= module.getSize(); i++){
+                            player.performCommand("hd addline " +
+                                    s +
+                                    " {he-" + module.getName() + "-" + i + "-user} - " +
+                                    "{he-" + module.getName() + "-" + i + "-value}");
+                        }
+                        player.performCommand("hd reload");
+
+                        return AnvilGUI.Response.close();
+                    }).open(player);
+
+
+        });
+        gui.setIcon(31, hologram_icon);
+
 
         player.openInventory(gui.getInventory());
     }
