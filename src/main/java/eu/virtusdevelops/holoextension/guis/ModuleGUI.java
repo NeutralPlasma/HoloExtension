@@ -147,7 +147,7 @@ public class ModuleGUI {
                         return AnvilGUI.Response.close();
                     }).open(player);
         });
-        gui.setIcon(29, size_icon);
+        gui.setIcon(16, noplayer_icon);
 
 
         // Create hologram
@@ -182,7 +182,7 @@ public class ModuleGUI {
 
 
         });
-        gui.setIcon(31, hologram_icon);
+        gui.setIcon(33, hologram_icon);
 
 
         player.openInventory(gui.getInventory());

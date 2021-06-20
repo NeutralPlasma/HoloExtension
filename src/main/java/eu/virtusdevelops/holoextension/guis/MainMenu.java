@@ -56,6 +56,7 @@ public class MainMenu {
                 if(module instanceof PapiModule) {
                     player.sendMessage(module.getName());
                     // TODO: Custom menu for papi modules...
+                    new ModuleGUI(player, module, plugin, moduleManager);
                 }else{
                     player.sendMessage(module.getName());
                     new ModuleGUI(player, module, plugin, moduleManager);
