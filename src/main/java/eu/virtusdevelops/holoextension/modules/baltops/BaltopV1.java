@@ -7,6 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,14 +35,27 @@ public class BaltopV1 extends Module {
 
     @Override
     public void onEnable() {
-        this.runTaskTimerAsynchronously(this.plugin, delay, repeat);
+
+        values = new HashMap<>();
+        sorted = new HashMap<>();
+        users = new ArrayList<>();
+
+        setTask(new BukkitRunnable() {
+            @Override
+            public void run() {
+                BaltopV1.this.run();
+            }
+        });
+        getTask().runTaskTimerAsynchronously(plugin, getDelay(), getRepeat());
+
         registerPlaceholders(10);
         super.onEnable();
     }
 
+
     @Override
     public void onDisable() {
-        this.cancel();
+        getTask().cancel();
         unregisterPlaceholders();
 
         values = null;
@@ -51,7 +65,6 @@ public class BaltopV1 extends Module {
         super.onDisable();
     }
 
-    @Override
     public void run() {
         Economy economy = plugin.getEcon();
         // Load the online players balances

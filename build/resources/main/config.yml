@@ -1,0 +1,17 @@
+modules:
+  baltop:
+    interval: 200L
+    noplayer: "unknown"
+    updateOffline: true
+    size: 10
+    enabled: true
+
+
+papi:
+  "%statistic_seconds_played%":  # Change this crap
+    interval: 200L
+    noplayer: "unknown"
+    updateOffline: true
+    size: 10
+    type: "time"
+    enabled: true
