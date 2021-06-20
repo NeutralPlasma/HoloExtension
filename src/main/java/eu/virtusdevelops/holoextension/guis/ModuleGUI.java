@@ -155,6 +155,8 @@ public class ModuleGUI {
         Icon hologram_icon = new Icon(hologram);
         hologram_icon.addClickAction((player) -> {
 
+
+            // Change this anyway its ugly but works.
             new AnvilGUI.Builder()
                     .plugin(plugin)
                     .text("<NAME>")
