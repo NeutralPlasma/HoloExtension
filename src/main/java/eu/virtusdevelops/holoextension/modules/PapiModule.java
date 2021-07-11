@@ -1,11 +1,8 @@
 package eu.virtusdevelops.holoextension.modules;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
-import eu.virtusdevelops.holoextension.modules.baltops.BaltopV1;
 import eu.virtusdevelops.holoextension.storage.Cache;
-import eu.virtusdevelops.virtuscore.VirtusCore;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -30,8 +27,8 @@ public class PapiModule extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean enabled, Cache cache, String callback){
-        super(updateOffline, name, plugin, type, delay, repeat, size, enabled, callback);
+    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, Cache cache, String callback){
+        super(updateOffline, name, plugin, type, ModuleType.PAPI, delay, repeat, size, enabled, callback);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
         this.cache = cache;

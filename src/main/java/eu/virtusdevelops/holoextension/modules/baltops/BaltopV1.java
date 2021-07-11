@@ -2,6 +2,7 @@ package eu.virtusdevelops.holoextension.modules.baltops;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
+import eu.virtusdevelops.holoextension.modules.ModuleDataType;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -26,8 +27,8 @@ public class BaltopV1 extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean enabled, String callback){
-        super(updateOffline, name, plugin, type, delay, repeat, size, enabled, callback);
+    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, String callback){
+        super(updateOffline, name, plugin, type, ModuleType.OTHER, delay, repeat, size, enabled, callback);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
         RETURN_ON_NULL = callback;

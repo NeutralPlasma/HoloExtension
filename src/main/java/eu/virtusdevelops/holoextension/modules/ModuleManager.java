@@ -2,9 +2,11 @@ package eu.virtusdevelops.holoextension.modules;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.baltops.BaltopV1;
+import eu.virtusdevelops.holoextension.modules.protocolLib.ProtocolModule;
 import eu.virtusdevelops.holoextension.storage.Cache;
 import eu.virtusdevelops.virtuscore.VirtusCore;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class ModuleManager {
                 config.getBoolean("modules.baltop.updateOffline"),
                 "baltop",
                 plugin,
-                ModuleType.NUMBER,
+                ModuleDataType.NUMBER,
                 0,
                 config.getLong("modules.baltop.interval"),
                 config.getInt(("modules.baltop.size")),
@@ -42,6 +44,24 @@ public class ModuleManager {
         );
         moduleList.add(baltopV1);
 
+
+        if(VirtusCore.plugins().isPluginEnabled("ProtocolLib")){
+            ProtocolModule protocolModule = new ProtocolModule(
+                    false,
+                    "ProtocolLib",
+                    plugin,
+                    ModuleDataType.NUMBER,
+                    ModuleType.OTHER,
+                    0,
+                    0,
+                    0,
+                    config.getBoolean("modules.protocollib.enabled"),
+                    ""
+            );
+            moduleList.add(protocolModule);
+        }
+
+
         // Register all papi modules
         for(String module : config.getConfigurationSection("papi").getKeys(false)){
             ConfigurationSection section = config.getConfigurationSection("papi." + module);
@@ -49,7 +69,7 @@ public class ModuleManager {
                     section.getBoolean("updateOffline"),
                     module,
                     plugin,
-                    ModuleType.valueOf(section.getString("type").toUpperCase()),
+                    ModuleDataType.valueOf(section.getString("type").toUpperCase()),
                     0L,
                     section.getLong("interval"),
                     section.getInt("size"),
@@ -58,17 +78,31 @@ public class ModuleManager {
                     section.getString("noplayer")
             );
             moduleList.add(papiModule);
+
         }
 
         for (Module module : moduleList){
-            if(module.isEnabled()) {
-                VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &aEnabling " + module.getName() + "... " + module.getRepeat()));
+            if(module.isEnabled()){
                 module.onEnable();
             }
         }
     }
 
-    public void createNewPapiModule(String name, ModuleType type){
+    public void updateModule(Module module){
+        String path = "modules." + module.getName();
+        if(module.getModuleType() == ModuleType.PAPI){
+            path = "papi." + module.getName();
+        }
+        plugin.getConfig().set(path + ".updateOffline", true);
+        plugin.getConfig().set(path + ".type", module.getType().toString());
+        plugin.getConfig().set(path + ".interval", 200L);
+        plugin.getConfig().set(path + ".size", 10);
+        plugin.getConfig().set(path + ".enabled", true);
+        plugin.getConfig().set(path + ".noplayer", "NULL");
+        plugin.saveConfig();
+    }
+
+    public void createNewPapiModule(String name, ModuleDataType type){
         String path = "papi." + name;
         plugin.getConfig().set(path + ".updateOffline", true);
         plugin.getConfig().set(path + ".type", type.toString());
@@ -81,54 +115,6 @@ public class ModuleManager {
         moduleList.add(module);
         module.onEnable();
     }
-
-
-    public boolean resetModule(Module module, boolean papi){
-        ConfigurationSection config = plugin.getConfig();
-        String name = module.getName();
-        moduleList.remove(module);
-
-        if (!papi){
-            if (name.equalsIgnoreCase("baltop")){
-                module.onDisable();
-
-                BaltopV1 baltopV1 = new BaltopV1(
-                        config.getBoolean("modules.baltop.updateOffline"),
-                        "baltop",
-                        plugin,
-                        ModuleType.NUMBER,
-                        0,
-                        config.getLong("modules.baltop.interval"),
-                        config.getInt(("modules.baltop.size")),
-                        config.getBoolean("modules.baltop.enabled"),
-                        config.getString("modules.baltop.noplayer")
-                );
-                baltopV1.onEnable();
-                moduleList.add(baltopV1);
-                return true;
-            }
-        }else{
-            ConfigurationSection section = config.getConfigurationSection("papi." + module.getName());
-            PapiModule papiModule = new PapiModule(
-                    section.getBoolean("updateOffline"),
-                    module.getName(),
-                    plugin,
-                    ModuleType.valueOf(section.getString("type").toUpperCase()),
-                    0L,
-                    section.getLong("interval"),
-                    section.getInt("size"),
-                    section.getBoolean("enabled"),
-                    cache,
-                    section.getString("noplayer")
-            );
-            papiModule.onEnable();
-            moduleList.add(papiModule);
-            return true;
-        }
-        return false;
-    }
-
-
 
     public List<Module> getModuleList() {
         return moduleList;

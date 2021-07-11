@@ -12,11 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class ModuleGUI {
     private InventoryCreator gui = new InventoryCreator(45, TextUtils.colorFormat(""));
@@ -33,13 +29,13 @@ public class ModuleGUI {
         gui.addCloseActions((a,b) -> {
 
         });
+        player.closeInventory();
         load();
     }
 
     private void load(){
         //player.closeInventory();
         gui.clean();
-
 
 
         // Enable item
@@ -57,6 +53,7 @@ public class ModuleGUI {
                 module.setEnabled(true);
                 module.onEnable();
             }
+            moduleManager.updateModule(module);
 
             load();
         });
@@ -79,6 +76,8 @@ public class ModuleGUI {
                         if (number > 0){
                             module.setRepeat(number);
                             module.reload();
+                            moduleManager.updateModule(module);
+                            player.performCommand("hd reload");
                         }
                         return AnvilGUI.Response.close();
                     }).open(player);
@@ -100,6 +99,8 @@ public class ModuleGUI {
                         if (number > 0){
                             module.setSize(number);
                             module.reload();
+                            moduleManager.updateModule(module);
+                            player.performCommand("hd reload");
                         }
                         return AnvilGUI.Response.close();
                     }).open(player);
@@ -121,6 +122,7 @@ public class ModuleGUI {
             }else{
                 module.setUpdateOffline(true);
             }
+            moduleManager.updateModule(module);
             module.reload();
             load();
         });
@@ -143,7 +145,8 @@ public class ModuleGUI {
                         module.setNoplayer(s);
 
                         module.reload();
-
+                        moduleManager.updateModule(module);
+                        player.performCommand("hd reload");
                         return AnvilGUI.Response.close();
                     }).open(player);
         });

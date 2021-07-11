@@ -3,6 +3,7 @@ package eu.virtusdevelops.holoextension;
 import eu.virtusdevelops.holoextension.commands.TemporaryCommand;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
 import eu.virtusdevelops.holoextension.storage.Cache;
+import eu.virtusdevelops.holoextension.utils.Metrics;
 import eu.virtusdevelops.virtuscore.gui.GuiListener;
 import eu.virtusdevelops.virtuscore.gui.Handler;
 import net.milkbowl.vault.economy.Economy;
@@ -34,6 +35,10 @@ public class HoloExtension extends JavaPlugin {
         getCommand("he").setExecutor(new TemporaryCommand(this, moduleManager));
 
         new GuiListener(new Handler(this), this);
+
+        // metrics
+        Metrics metrics = new Metrics(this, 5834);
+        metrics.addCustomChart(new Metrics.SimplePie("amount_of_modules", () -> ""+moduleManager.getModuleList().size()));
     }
 
 

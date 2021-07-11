@@ -1,4 +1,18 @@
+# plugin developed by Gasper Lukman
+# https://github.com/NeutralPlasma/HoloExtension
+# All rights reserved to Gasper Lukman
+# Support discord server: https://discord.gg/Zpks2WK
+#
+# for each placeholder replace # with position for example
+# {he-baltop-1-user} {he-baltop-2-user} {he-baltop-3-user}
+
+version: @version@
+
 modules:
+  # baltop module
+  # placeholders:
+  # {he-baltop-#-user}
+  # {he-baltop-#-value}
   baltop:
     interval: 200L
     noplayer: "unknown"
@@ -6,8 +20,25 @@ modules:
     size: 10
     enabled: true
 
+  # protocollib module:
+  # placeholders:
+  # {slow} - 10 seconds
+  # {medium} - 1 second
+  # {fast} - 0.1 second
+  ProtocolLib:
+    enabled: true
+    updateOffline: true
+    type: NUMBER
+    interval: 200
+    size: 10
+    noplayer: 'NULL'
+
 
 papi:
+  # Example papi module
+  # placeholders
+  # {he-%statistic_seconds_played%-#-user}
+  # {he-%statistic_seconds_played%-#-value}
   "%statistic_seconds_played%":  # Change this crap
     interval: 200L
     noplayer: "unknown"

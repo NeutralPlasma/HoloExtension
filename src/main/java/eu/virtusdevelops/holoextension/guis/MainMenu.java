@@ -3,7 +3,7 @@ package eu.virtusdevelops.holoextension.guis;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
-import eu.virtusdevelops.holoextension.modules.ModuleType;
+import eu.virtusdevelops.holoextension.modules.ModuleDataType;
 import eu.virtusdevelops.holoextension.modules.PapiModule;
 import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
@@ -109,6 +109,7 @@ public class MainMenu {
     }
 
     // GUIS
+
     private void finalConstructionMenu(String name){
         new AnvilGUI.Builder()
                 .plugin(plugin)
@@ -119,7 +120,7 @@ public class MainMenu {
                 })
                 .onComplete((player, s) -> {
                     try{
-                        ModuleType type = ModuleType.valueOf(s);
+                        ModuleDataType type = ModuleDataType.valueOf(s);
                         moduleManager.createNewPapiModule(name, type);
                         return AnvilGUI.Response.close();
                     }catch (Exception error){

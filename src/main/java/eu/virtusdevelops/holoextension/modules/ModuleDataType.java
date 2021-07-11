@@ -1,6 +1,6 @@
 package eu.virtusdevelops.holoextension.modules;
 
-public enum ModuleType {
-    PAPI,
-    OTHER
+public enum ModuleDataType {
+    TIME,
+    NUMBER
 }

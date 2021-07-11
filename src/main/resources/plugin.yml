@@ -4,11 +4,11 @@ version: @version@
 api-version: "1.13"
 author: NeutralPlasma
 
-depend: [Vault, ProtocolLib]
+depend: [Vault]
 softdepend:
   - PlaceholderAPI
   - HolographicDisplays
-  - SimpleHolograms
+  - ProtocolLib
 
 
 commands:

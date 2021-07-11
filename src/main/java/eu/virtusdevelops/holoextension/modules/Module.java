@@ -19,13 +19,14 @@ public abstract class Module {
     private boolean updateOffline;
     private String noplayer;
     private HoloExtension plugin;
-    private ModuleType type;
+    private ModuleDataType type;
+    private ModuleType moduleType;
 
 
 
     private List<String> placeholders = new ArrayList<>();
 
-    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleType type, long delay, long repeat, int size, boolean isEnabled, String callback){
+    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, ModuleType type1, long delay, long repeat, int size, boolean isEnabled, String callback){
         this.type = type;
         this.name = name;
         this.plugin = plugin;
@@ -35,13 +36,14 @@ public abstract class Module {
         this.updateOffline = updateOffline;
         this.isEnabled = isEnabled;
         this.noplayer = callback;
+        this.moduleType = type1;
     }
 
     public void onEnable(){
-        VirtusCore.console().sendMessage("enable");
+        VirtusCore.console().sendMessage(eu.virtusdevelops.virtuscore.utils.TextUtils.colorFormat("&8[&bHE&8] &aEnabling " + getName()));
     }
     public void onDisable(){
-        VirtusCore.console().sendMessage("Disable");
+        VirtusCore.console().sendMessage(eu.virtusdevelops.virtuscore.utils.TextUtils.colorFormat("&8[&bHE&8] &cDisabling " + getName()));
     }
     public void reload(){
         onDisable();
@@ -67,7 +69,7 @@ public abstract class Module {
             String placeholder = "{he-" + name + "-" + i + "-value}";
             HologramsAPI.registerPlaceholder(plugin, placeholder, delay, () -> {
                 // TODO: Add balance formaters.
-                if(type == ModuleType.NUMBER){
+                if(type == ModuleDataType.NUMBER){
                     return TextUtils.formatValue(2, getValue(finalI));
                 }else{
                     return TextUtils.formatTime(getValue(finalI) * 1000);
@@ -118,7 +120,7 @@ public abstract class Module {
         return repeat;
     }
 
-    public ModuleType getType() {
+    public ModuleDataType getType() {
         return type;
     }
 
@@ -128,6 +130,10 @@ public abstract class Module {
 
     public String getNoplayer() {
         return noplayer;
+    }
+
+    public ModuleType getModuleType() {
+        return moduleType;
     }
 
     public void setDelay(long delay) {
@@ -154,7 +160,7 @@ public abstract class Module {
         this.size = size;
     }
 
-    public void setType(ModuleType type) {
+    public void setType(ModuleDataType type) {
         this.type = type;
     }
 
