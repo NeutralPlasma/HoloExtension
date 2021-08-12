@@ -8,6 +8,9 @@
 
 version: @version@
 
+system:
+  storage_type: "SQL"
+
 modules:
   # baltop module
   # placeholders:

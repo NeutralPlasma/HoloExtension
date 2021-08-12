@@ -5,3 +5,4 @@
 /included/
 /build/
 build
+*.class

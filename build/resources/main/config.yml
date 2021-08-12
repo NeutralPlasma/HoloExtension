@@ -8,6 +8,9 @@
 
 version: 0.0.1 Alpha
 
+system:
+  storage_type: "SQL"
+
 modules:
   # baltop module
   # placeholders:

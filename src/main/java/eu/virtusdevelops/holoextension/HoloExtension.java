@@ -3,6 +3,10 @@ package eu.virtusdevelops.holoextension;
 import eu.virtusdevelops.holoextension.commands.TemporaryCommand;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
 import eu.virtusdevelops.holoextension.storage.Cache;
+import eu.virtusdevelops.holoextension.storage.DataStorage;
+import eu.virtusdevelops.holoextension.storage.storages.FlatFileStorage;
+import eu.virtusdevelops.holoextension.storage.storages.MySQLStorage;
+import eu.virtusdevelops.holoextension.storage.storages.SQLiteStorage;
 import eu.virtusdevelops.holoextension.utils.Metrics;
 import eu.virtusdevelops.virtuscore.gui.GuiListener;
 import eu.virtusdevelops.virtuscore.gui.Handler;
@@ -26,9 +30,24 @@ public class HoloExtension extends JavaPlugin {
         // Cache
         cache = new Cache(this);
         cache.setup();
+        // init storage stuff
+        DataStorage storage;
+        switch (getConfig().getString("system.storage_type").toLowerCase()){
+            case "sql":
+                storage = new SQLiteStorage(this);
+                break;
+            case "mysql":
+                storage = new MySQLStorage(this, "root", "", "test", "localhost", "3306", false);
+                break;
+            default:
+                storage = new FlatFileStorage(this);
+        }
+        storage.setup();
 
         // Module manager
-        moduleManager = new ModuleManager(this, cache);
+
+
+        moduleManager = new ModuleManager(this, storage);
         moduleManager.reload();
 
         // Load commands

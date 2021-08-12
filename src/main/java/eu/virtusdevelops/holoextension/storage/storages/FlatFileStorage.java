@@ -11,7 +11,10 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class FlatFileStorage implements DataStorage {
 
@@ -25,6 +28,16 @@ public class FlatFileStorage implements DataStorage {
 
     @Override
     public void addDataStorage(String name) {}
+
+    @Override
+    public void setup(List<String> storages){
+        setup();
+    }
+
+    @Override
+    public String getType(){
+        return "FLAT";
+    }
 
     @Override
     public void setup() {
@@ -96,6 +109,18 @@ public class FlatFileStorage implements DataStorage {
     @Override
     public void update(String storage, UUID uuid, double value) {
         fileConfiguration.set("data." + storage + "." + uuid, value);
+    }
+
+
+
+    @Override
+    public CompletableFuture<Double> get(UUID uuid, String storage) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<HashMap<UUID, Double>> getAll(String storage) {
+        return null;
     }
 
 }

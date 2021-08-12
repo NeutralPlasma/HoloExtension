@@ -7,21 +7,19 @@ import eu.virtusdevelops.holoextension.storage.DataStorage;
 import eu.virtusdevelops.virtuscore.VirtusCore;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
-public class MySQLStorage implements DataStorage {
+public class SQLiteStorage implements DataStorage {
 
     private List<String> updateList = new ArrayList<>();
     private HoloExtension plugin;
@@ -29,19 +27,16 @@ public class MySQLStorage implements DataStorage {
     private BukkitTask task;
 
 
-    public MySQLStorage(HoloExtension plugin, String username, String password, String dbname, String ip, String port, boolean useSSL){
+
+    public SQLiteStorage(HoloExtension plugin){
 
         HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource");
+        config.setDataSourceClassName("org.sqlite.JDBC");
+        config.setJdbcUrl("jdbc:sqlite:" + plugin.getDataFolder().getPath() + "/storage.sql" );
         config.setPoolName("Storage");
         config.setMaximumPoolSize(10);
         config.setConnectionTimeout(25000);
-        config.addDataSourceProperty("serverName", ip);
-        config.addDataSourceProperty("port", port);
-        config.addDataSourceProperty("databaseName", dbname);
-        config.addDataSourceProperty("user", username);
-        config.addDataSourceProperty("password", password);
-        config.addDataSourceProperty("useSSL", useSSL);
+        config.setConnectionTestQuery("SELECT 1");
 
         hikari = new HikariDataSource(config);
 
@@ -56,9 +51,7 @@ public class MySQLStorage implements DataStorage {
     }
 
     @Override
-    public void setup(){
-        startSaver();
-    }
+    public void setup(){ }
 
     // region: system
     @Override
@@ -68,14 +61,11 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void save() {
-        List<String> lines = updateList;
-        updateList.clear();
         try(Connection connection = hikari.getConnection()){
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Saving data.."));
-            for(String line : lines){
-                VirtusCore.console().sendMessage("Executing: " + line);
-                //connection.prepareStatement(line).execute();
+            for(String line : updateList){
+                connection.prepareStatement(line).execute();
             }
+            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Saving data.."));
         }catch (SQLException exception){
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while saving data..."));
             exception.printStackTrace();
@@ -89,7 +79,7 @@ public class MySQLStorage implements DataStorage {
         if(!task.isCancelled()){
             task.cancel();
         }
-        save();
+
         task = null;
 
         setup();
@@ -101,7 +91,6 @@ public class MySQLStorage implements DataStorage {
     public void startSaver() {
         // run all SQL statements.
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 1500L);
-        VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Started data saver "));
     }
 
     @Override
@@ -110,7 +99,6 @@ public class MySQLStorage implements DataStorage {
             connection.prepareStatement(("CREATE TABLE IF NOT EXISTS `{name}`(" +
                     "ID VARCHAR(36) PRIMARY KEY," +
                     "value double)").replace("{name}", name)).execute();
-
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Adding new table for storage: " + name));
         } catch (SQLException throwables) {
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while creating table: "  + name));
@@ -143,8 +131,7 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void add(String storage, UUID uuid, double value) {
-        VirtusCore.console().sendMessage("Adding player");
-        updateList.add("INSERT INTO `" + storage + "` VALUES ( " + uuid + ", " + value + "  )");
+        updateList.add("INSERT INTO " + storage + " VALUES ( " + uuid + ", " + value + "  )");
     }
 
     @Override
@@ -158,10 +145,10 @@ public class MySQLStorage implements DataStorage {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = hikari.getConnection()){
 
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "` WHERE uuid = ?");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + storage + "WHERE uuid = ?");
                 statement.setString(1, uuid.toString());
                 var set = statement.executeQuery();
-                if(set.next()){
+                if( set.next()){
                     return set.getDouble("value");
                 }
                 return -1.0;
@@ -171,12 +158,11 @@ public class MySQLStorage implements DataStorage {
         });
     }
 
-
     public CompletableFuture<HashMap<UUID, Double>> getAll(String storage){
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = hikari.getConnection()){
                 HashMap<UUID, Double> data = new HashMap<>();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "`");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + storage);
 
                 var set = statement.executeQuery();
                 while(set.next()){
@@ -194,7 +180,7 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void update(String storage, UUID uuid, double value) {
-        updateList.add("UPDATE `" + storage + "` SET value = " + value + " WHERE id = '" + uuid + "'");
+        updateList.add("UPDATE " + storage + " SET value = " + value + " WHERE id = '" + uuid + "'");
     }
 
     // endregion
