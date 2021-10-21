@@ -21,12 +21,13 @@ public abstract class Module {
     private HoloExtension plugin;
     private ModuleDataType type;
     private ModuleType moduleType;
+    private int format;
 
 
 
     private List<String> placeholders = new ArrayList<>();
 
-    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, ModuleType type1, long delay, long repeat, int size, boolean isEnabled, String callback){
+    public Module(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, ModuleType type1, long delay, long repeat, int size, boolean isEnabled, String callback, int format){
         this.type = type;
         this.name = name;
         this.plugin = plugin;
@@ -37,6 +38,7 @@ public abstract class Module {
         this.isEnabled = isEnabled;
         this.noplayer = callback;
         this.moduleType = type1;
+        this.format = format;
     }
 
     public void onEnable(){
@@ -59,6 +61,8 @@ public abstract class Module {
     }
 
     public double getValue(int positon){return -1;}
+
+    public String getValueFormated(int positon){return "-1";}
     public String getPlayer(int position){return "";}
 
 
@@ -70,7 +74,7 @@ public abstract class Module {
             HologramsAPI.registerPlaceholder(plugin, placeholder, delay, () -> {
                 // TODO: Add balance formaters.
                 if(type == ModuleDataType.NUMBER){
-                    return TextUtils.formatValue(2, getValue(finalI));
+                    return TextUtils.formatValue(format, getValue(finalI));
                 }else{
                     return TextUtils.formatTime(getValue(finalI) * 1000);
                 }
@@ -162,6 +166,14 @@ public abstract class Module {
 
     public void setType(ModuleDataType type) {
         this.type = type;
+    }
+
+    public int getFormat() {
+        return format;
+    }
+
+    public void setFormat(int format) {
+        this.format = format;
     }
 
     public void addPlaceholder(String placeholder){

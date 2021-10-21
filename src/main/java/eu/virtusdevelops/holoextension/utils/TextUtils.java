@@ -41,8 +41,8 @@ public class TextUtils {
             case 1: return formatDecimals(value);
             case 2: return formatNumbers(value); // STOP
             case 3: return formatNames(value);
+            default: return ""+value;
         }
-        return "";
     }
 
     public static String formatTime(double time) {

@@ -68,18 +68,16 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void save() {
-        List<String> lines = updateList;
+        List<String> lines = new ArrayList<>(updateList);
         updateList.clear();
         try(Connection connection = hikari.getConnection()){
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Saving data.."));
             for(String line : lines){
-                VirtusCore.console().sendMessage("Executing: " + line);
-                //connection.prepareStatement(line).execute();
+                connection.prepareStatement(line).execute();
             }
         }catch (SQLException exception){
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while saving data..."));
             exception.printStackTrace();
-            // errors.
         }
     }
 
@@ -100,8 +98,7 @@ public class MySQLStorage implements DataStorage {
     @Override
     public void startSaver() {
         // run all SQL statements.
-        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 1500L);
-        VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Started data saver "));
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 800L);
     }
 
     @Override
@@ -110,12 +107,9 @@ public class MySQLStorage implements DataStorage {
             connection.prepareStatement(("CREATE TABLE IF NOT EXISTS `{name}`(" +
                     "ID VARCHAR(36) PRIMARY KEY," +
                     "value double)").replace("{name}", name)).execute();
-
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Adding new table for storage: " + name));
-        } catch (SQLException throwables) {
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while creating table: "  + name));
-
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &cError occurred while creating table: "  + name));
+            throwable.printStackTrace();
         }
         // ADD SQL statement
     }
@@ -143,8 +137,8 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void add(String storage, UUID uuid, double value) {
-        VirtusCore.console().sendMessage("Adding player");
-        updateList.add("INSERT INTO `" + storage + "` VALUES ( " + uuid + ", " + value + "  )");
+//        VirtusCore.console().sendMessage("Adding player");
+        updateList.add("INSERT INTO `" + storage + "` VALUES ( '" + uuid + "', " + value + "  )");
     }
 
     @Override
@@ -158,7 +152,7 @@ public class MySQLStorage implements DataStorage {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = hikari.getConnection()){
 
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "` WHERE uuid = ?");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "` WHERE ID = ?");
                 statement.setString(1, uuid.toString());
                 var set = statement.executeQuery();
                 if(set.next()){
@@ -181,7 +175,7 @@ public class MySQLStorage implements DataStorage {
                 var set = statement.executeQuery();
                 while(set.next()){
                     data.put(
-                            UUID.fromString(set.getString("id")),
+                            UUID.fromString(set.getString("ID")),
                             set.getDouble("value")
                     );
                 }
@@ -194,7 +188,7 @@ public class MySQLStorage implements DataStorage {
 
     @Override
     public void update(String storage, UUID uuid, double value) {
-        updateList.add("UPDATE `" + storage + "` SET value = " + value + " WHERE id = '" + uuid + "'");
+        updateList.add("UPDATE `" + storage + "` SET value = " + value + " WHERE ID = '" + uuid + "'");
     }
 
     // endregion

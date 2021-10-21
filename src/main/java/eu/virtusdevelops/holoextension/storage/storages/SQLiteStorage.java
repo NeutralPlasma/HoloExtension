@@ -9,7 +9,10 @@ import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.sqlite.SQLiteDataSource;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -31,12 +34,21 @@ public class SQLiteStorage implements DataStorage {
     public SQLiteStorage(HoloExtension plugin){
 
         HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName("org.sqlite.JDBC");
-        config.setJdbcUrl("jdbc:sqlite:" + plugin.getDataFolder().getPath() + "/storage.sql" );
+
+        File file = new File(plugin.getDataFolder(), "storage.db");
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            }catch (IOException error){
+                error.printStackTrace();
+            }
+        }
+        config.setDriverClassName("org.sqlite.JDBC");
+        config.setJdbcUrl("jdbc:sqlite:" + file);
         config.setPoolName("Storage");
         config.setMaximumPoolSize(10);
         config.setConnectionTimeout(25000);
-        config.setConnectionTestQuery("SELECT 1");
+//        config.setConnectionTestQuery("SELECT 1");
 
         hikari = new HikariDataSource(config);
 
@@ -51,7 +63,9 @@ public class SQLiteStorage implements DataStorage {
     }
 
     @Override
-    public void setup(){ }
+    public void setup(){
+        startSaver();
+    }
 
     // region: system
     @Override
@@ -61,11 +75,14 @@ public class SQLiteStorage implements DataStorage {
 
     @Override
     public void save() {
+        List<String> lines = new ArrayList<>(updateList);
+        updateList.clear();
         try(Connection connection = hikari.getConnection()){
-            for(String line : updateList){
+//            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Saving data.."));
+            for(String line : lines){
+//                VirtusCore.console().sendMessage("Executing: " + line);
                 connection.prepareStatement(line).execute();
             }
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Saving data.."));
         }catch (SQLException exception){
             VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while saving data..."));
             exception.printStackTrace();
@@ -79,7 +96,7 @@ public class SQLiteStorage implements DataStorage {
         if(!task.isCancelled()){
             task.cancel();
         }
-
+        save();
         task = null;
 
         setup();
@@ -90,7 +107,8 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void startSaver() {
         // run all SQL statements.
-        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 1500L);
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 800L);
+//        VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &7Started data saver "));
     }
 
     @Override
@@ -99,9 +117,10 @@ public class SQLiteStorage implements DataStorage {
             connection.prepareStatement(("CREATE TABLE IF NOT EXISTS `{name}`(" +
                     "ID VARCHAR(36) PRIMARY KEY," +
                     "value double)").replace("{name}", name)).execute();
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&a[HE] &7Adding new table for storage: " + name));
+
+            VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &7Adding new table for storage: " + name));
         } catch (SQLException throwables) {
-            VirtusCore.console().sendMessage(TextUtils.colorFormat("&c[HE] &7Error occurred while creating table: "  + name));
+            VirtusCore.console().sendMessage(TextUtils.colorFormat("&8[&bHE&8] &cError occurred while creating table: "  + name));
 
             throwables.printStackTrace();
         }
@@ -131,7 +150,8 @@ public class SQLiteStorage implements DataStorage {
 
     @Override
     public void add(String storage, UUID uuid, double value) {
-        updateList.add("INSERT INTO " + storage + " VALUES ( " + uuid + ", " + value + "  )");
+//        VirtusCore.console().sendMessage("Adding player");
+        updateList.add("INSERT INTO `" + storage + "` VALUES ( '" + uuid + "', " + value + "  )");
     }
 
     @Override
@@ -143,12 +163,13 @@ public class SQLiteStorage implements DataStorage {
     public CompletableFuture<Double> get(UUID uuid, String storage) {
 
         return CompletableFuture.supplyAsync(() -> {
+            VirtusCore.console().sendMessage("Getting user...");
             try(Connection connection = hikari.getConnection()){
 
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + storage + "WHERE uuid = ?");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "` WHERE ID = ?");
                 statement.setString(1, uuid.toString());
                 var set = statement.executeQuery();
-                if( set.next()){
+                if(set.next()){
                     return set.getDouble("value");
                 }
                 return -1.0;
@@ -158,16 +179,19 @@ public class SQLiteStorage implements DataStorage {
         });
     }
 
+
     public CompletableFuture<HashMap<UUID, Double>> getAll(String storage){
+//        VirtusCore.console().sendMessage("Running completable future");
         return CompletableFuture.supplyAsync(() -> {
+//            VirtusCore.console().sendMessage("Getting all users...");
             try(Connection connection = hikari.getConnection()){
                 HashMap<UUID, Double> data = new HashMap<>();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + storage);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + storage + "`");
 
                 var set = statement.executeQuery();
                 while(set.next()){
                     data.put(
-                            UUID.fromString(set.getString("id")),
+                            UUID.fromString(set.getString("ID")),
                             set.getDouble("value")
                     );
                 }
@@ -180,9 +204,6 @@ public class SQLiteStorage implements DataStorage {
 
     @Override
     public void update(String storage, UUID uuid, double value) {
-        updateList.add("UPDATE " + storage + " SET value = " + value + " WHERE id = '" + uuid + "'");
+        updateList.add("UPDATE `" + storage + "` SET value = " + value + " WHERE ID = '" + uuid + "'");
     }
-
-    // endregion
-
 }

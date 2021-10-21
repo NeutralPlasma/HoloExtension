@@ -10,6 +10,15 @@ version: @version@
 
 system:
   storage_type: "SQL"
+  # SQL, MySQL or FLAT
+
+  #mysql configuration
+  username: "root"
+  password: "password"
+  server: "127.0.0.1"
+  port: 3306
+  useSSL: false
+  database: "example"
 
 modules:
   # baltop module
@@ -17,7 +26,7 @@ modules:
   # {he-baltop-#-user}
   # {he-baltop-#-value}
   baltop:
-    interval: 200L
+    interval: 200
     noplayer: "unknown"
     updateOffline: true
     size: 10
@@ -43,7 +52,7 @@ papi:
   # {he-%statistic_seconds_played%-#-user}
   # {he-%statistic_seconds_played%-#-value}
   "%statistic_seconds_played%":  # Change this crap
-    interval: 200L
+    interval: 200
     noplayer: "unknown"
     updateOffline: true
     size: 10

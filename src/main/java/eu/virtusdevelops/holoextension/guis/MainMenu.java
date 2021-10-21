@@ -104,6 +104,19 @@ public class MainMenu {
         }));
         gui.setIcon(44, papi_create_icon);
 
+
+
+        // TODO: add item for creating new papi module.
+        ItemStack external_modules_item = GuiUtils.plainItem(Material.COMMAND_BLOCK, "&8[&6Premade leaderboards&8]");
+        Icon external_modules_icon = new Icon(external_modules_item);
+        external_modules_icon.addClickAction((player1 -> {
+            //load();
+            new ExternalModulesMenu(player, moduleManager);
+        }));
+        gui.setIcon(42, external_modules_icon);
+
+
+
         player.openInventory(gui.getInventory());
         bigger = false;
     }

@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class FlatFileStorage implements DataStorage {
     private FileConfiguration fileConfiguration;
     private File file;
     private HoloExtension plugin;
+    private BukkitTask task;
 
     public FlatFileStorage(HoloExtension plugin){
         this.plugin = plugin;
@@ -56,6 +58,7 @@ public class FlatFileStorage implements DataStorage {
         }else{
             fileConfiguration = YamlConfiguration.loadConfiguration(file);
         }
+        startSaver();
     }
 
     @Override
@@ -71,12 +74,19 @@ public class FlatFileStorage implements DataStorage {
 
     @Override
     public void reload() {
+        if(!task.isCancelled()){
+            task.cancel();
+        }
+        save();
+        task = null;
+
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        startSaver();
     }
 
     @Override
     public void startSaver() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 1500L);
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::save, 0L, 800L);
     }
 
 
@@ -115,7 +125,7 @@ public class FlatFileStorage implements DataStorage {
 
     @Override
     public CompletableFuture<Double> get(UUID uuid, String storage) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> get(storage, uuid));
     }
 
     @Override

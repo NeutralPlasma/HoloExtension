@@ -3,6 +3,7 @@ package eu.virtusdevelops.holoextension.modules;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.storage.Cache;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
+import eu.virtusdevelops.holoextension.utils.TextUtils;
 import eu.virtusdevelops.virtuscore.VirtusCore;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -30,8 +31,8 @@ public class PapiModule extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, DataStorage cache, String callback){
-        super(updateOffline, name, plugin, type, ModuleType.PAPI, delay, repeat, size, enabled, callback);
+    public PapiModule(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, DataStorage cache, String callback, int format){
+        super(updateOffline, name, plugin, type, ModuleType.PAPI, delay, repeat, size, enabled, callback, format);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
         this.cache = cache;
@@ -50,7 +51,6 @@ public class PapiModule extends Module {
 
         registerPlaceholders(10);
         cache.addDataStorage(this.getName());
-
 
         cache();
         super.onEnable();
@@ -97,7 +97,10 @@ public class PapiModule extends Module {
                 }
                 values.put(player.getUniqueId(), value);
             }catch (Exception ignored){
-                ignored.printStackTrace();
+                plugin.getLogger().severe("Module " + getName() + " could not parse data from player: " + player.getName() + ":" + player.getUniqueId() +
+                        "Returned data: " + PlaceholderAPI.setPlaceholders(player, getName()));
+
+//                ignored.printStackTrace();
             }
         }
 
@@ -115,7 +118,9 @@ public class PapiModule extends Module {
                         }
                         values.put(player.getUniqueId(), value);
                     }catch (Exception ignored){
-                        ignored.printStackTrace();
+                        plugin.getLogger().severe("Module " + this.getName() + " cannot parse data from offline players, consider disabling it. It was automatically disabled for this session.");
+                        this.updateOffline = false;
+                        break;
                     }
                 }
             }
@@ -144,6 +149,14 @@ public class PapiModule extends Module {
             return values.get(users.get(position-1));
         }
         return 0.0;
+    }
+
+    @Override
+    public String getValueFormated(int position){
+        if(users.size() >= position){
+            return TextUtils.formatValue(getFormat(), values.get(users.get(position-1)));
+        }
+        return "0.0";
     }
 
     @Override

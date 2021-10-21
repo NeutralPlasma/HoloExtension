@@ -19,29 +19,29 @@ public class HoloExtension extends JavaPlugin {
 
     private Economy econ;
     private ModuleManager moduleManager;
-    private Cache cache;
+//    private Cache cache;
 
     @Override
     public void onEnable() {
         // The enable stuff.
         setupEconomy();
-        this.saveDefaultConfig();
+        saveDefaultConfig();
 
         // Cache
-        cache = new Cache(this);
-        cache.setup();
+//        cache = new Cache(this);
+//        cache.setup();
         // init storage stuff
-        DataStorage storage;
-        switch (getConfig().getString("system.storage_type").toLowerCase()){
-            case "sql":
-                storage = new SQLiteStorage(this);
-                break;
-            case "mysql":
-                storage = new MySQLStorage(this, "root", "", "test", "localhost", "3306", false);
-                break;
-            default:
-                storage = new FlatFileStorage(this);
-        }
+        DataStorage storage = switch (getConfig().getString("system.storage_type").toLowerCase()) {
+            case "sql" -> new SQLiteStorage(this);
+            case "mysql" -> new MySQLStorage(this,
+                    getConfig().getString("system.username"),
+                    getConfig().getString("system.password"),
+                    getConfig().getString("system.database"),
+                    getConfig().getString("system.server"),
+                    getConfig().getString("system.port"),
+                    getConfig().getBoolean("system.useSSL"));
+            default -> new FlatFileStorage(this);
+        };
         storage.setup();
 
         // Module manager
@@ -64,22 +64,21 @@ public class HoloExtension extends JavaPlugin {
     // Reload
     public void reload(){
         this.reloadConfig();
-        cache.reload();
+//        cache.reload();
         moduleManager.reload();
     }
 
 
-    // Vault stuff down here..
-    private boolean setupEconomy() {
+    // Vault stuff down here...
+    private void setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
+            return;
         }
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
-            return false;
+            return;
         }
         econ = rsp.getProvider();
-        return econ != null;
     }
 
     public Economy getEcon(){

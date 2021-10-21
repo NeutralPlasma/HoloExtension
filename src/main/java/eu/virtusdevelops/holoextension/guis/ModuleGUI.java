@@ -3,6 +3,7 @@ package eu.virtusdevelops.holoextension.guis;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
+import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
 import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
@@ -143,7 +144,6 @@ public class ModuleGUI {
                     })
                     .onComplete((player1, s) -> {
                         module.setNoplayer(s);
-
                         module.reload();
                         moduleManager.updateModule(module);
                         player.performCommand("hd reload");

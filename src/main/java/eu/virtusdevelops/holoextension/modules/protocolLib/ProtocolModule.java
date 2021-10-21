@@ -17,7 +17,7 @@ public class ProtocolModule extends Module {
     private long delay;
 
     public ProtocolModule(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, ModuleType type1, long delay, long repeat, int size, boolean isEnabled, String callback) {
-        super(updateOffline, name, plugin, type, type1, delay, repeat, size, isEnabled, callback);
+        super(updateOffline, name, plugin, type, type1, delay, repeat, size, isEnabled, callback,0);
         this.delay = delay;
         this.plugin = plugin;
     }

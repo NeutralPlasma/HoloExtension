@@ -27,8 +27,8 @@ public class BaltopV1 extends Module {
     private static String RETURN_ON_NULL = "";
 
 
-    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, String callback){
-        super(updateOffline, name, plugin, type, ModuleType.OTHER, delay, repeat, size, enabled, callback);
+    public BaltopV1(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, long delay, long repeat, int size, boolean enabled, String callback, int format){
+        super(updateOffline, name, plugin, type, ModuleType.OTHER, delay, repeat, size, enabled, callback, format);
         this.plugin = plugin;
         this.updateOffline = updateOffline;
         RETURN_ON_NULL = callback;
