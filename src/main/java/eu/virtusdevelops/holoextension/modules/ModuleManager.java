@@ -30,19 +30,21 @@ public class ModuleManager {
 
         // Re register all modules.
         ConfigurationSection config = plugin.getConfig();
-        BaltopV1 baltopV1 = new BaltopV1(
-                config.getBoolean("modules.baltop.updateOffline"),
-                "baltop",
-                plugin,
-                ModuleDataType.NUMBER,
-                0,
-                config.getLong("modules.baltop.interval"),
-                config.getInt(("modules.baltop.size")),
-                config.getBoolean("modules.baltop.enabled"),
-                config.getString("modules.baltop.noplayer"),
-                config.isSet("modules.baltop.format") ? config.getInt("modules.baltop.format") : 0
-        );
-        moduleList.add(baltopV1);
+        if (config.getBoolean("modules.baltop.enabled")) {
+            BaltopV1 baltopV1 = new BaltopV1(
+                    config.getBoolean("modules.baltop.updateOffline"),
+                    "baltop",
+                    plugin,
+                    ModuleDataType.NUMBER,
+                    0,
+                    config.getLong("modules.baltop.interval"),
+                    config.getInt(("modules.baltop.size")),
+                    config.getBoolean("modules.baltop.enabled"),
+                    config.getString("modules.baltop.noplayer"),
+                    config.isSet("modules.baltop.format") ? config.getInt("modules.baltop.format") : 0
+            );
+            moduleList.add(baltopV1);
+        }
 
 
         if(VirtusCore.plugins().isPluginEnabled("ProtocolLib")){

@@ -1,10 +1,8 @@
 package eu.virtusdevelops.holoextension.modules;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
-import eu.virtusdevelops.holoextension.storage.Cache;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
 import eu.virtusdevelops.holoextension.utils.TextUtils;
-import eu.virtusdevelops.virtuscore.VirtusCore;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

@@ -4,10 +4,12 @@ import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleDataType;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
+import eu.virtusdevelops.virtuscore.VirtusCore;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 public class BaltopV1 extends Module {
 
     private HoloExtension plugin;
+    private Economy econ;
+
 
     private HashMap<UUID, Double> values = new HashMap<>();
     private HashMap<UUID, Double> sorted = new HashMap<>();
@@ -36,6 +40,8 @@ public class BaltopV1 extends Module {
 
     @Override
     public void onEnable() {
+
+        setupEconomy();
 
         values = new HashMap<>();
         sorted = new HashMap<>();
@@ -67,11 +73,10 @@ public class BaltopV1 extends Module {
     }
 
     public void run() {
-        Economy economy = plugin.getEcon();
         // Load the online players balances
         for(Player player : Bukkit.getOnlinePlayers()){
             try{
-                values.put(player.getUniqueId(), economy.getBalance(player));
+                values.put(player.getUniqueId(), econ.getBalance(player));
             }catch (Exception ignored){ }
         }
 
@@ -81,7 +86,7 @@ public class BaltopV1 extends Module {
                 counter = 0;
                 for(OfflinePlayer player : Bukkit.getOfflinePlayers()){
                     try{
-                        values.put(player.getUniqueId(), economy.getBalance(player));
+                        values.put(player.getUniqueId(), econ.getBalance(player));
                     }catch (Exception ignored){}
                 }
             }
@@ -106,7 +111,7 @@ public class BaltopV1 extends Module {
     public double getValue(int position) {
         if(users.size() >= position){
 
-            return plugin.getEcon().getBalance(Bukkit.getOfflinePlayer(users.get(position-1) ));
+            return econ.getBalance(Bukkit.getOfflinePlayer(users.get(position-1) ));
         }
         return 0.0;
     }
@@ -120,6 +125,21 @@ public class BaltopV1 extends Module {
     }
 
 
+
+    private void setupEconomy() {
+        if (VirtusCore.server().getPluginManager().getPlugin("Vault") == null) {
+            return;
+        }
+        RegisteredServiceProvider<Economy> rsp = VirtusCore.server().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return;
+        }
+        econ = rsp.getProvider();
+    }
+
+    public Economy getEcon(){
+        return econ;
+    }
 
 
 }

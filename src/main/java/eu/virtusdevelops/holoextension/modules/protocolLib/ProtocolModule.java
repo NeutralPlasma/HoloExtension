@@ -8,6 +8,7 @@ import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleDataType;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
+import me.filoghost.holographicdisplays.api.beta.HolographicDisplaysAPI;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,20 +44,33 @@ public class ProtocolModule extends Module {
 
     @Override
     public void registerPlaceholders(double delay){
-        final List<String> changingTextImitation = Arrays.asList("&8 &r", "&7 &r");
+        //final List<String> changingTextImitation = Arrays.asList("&8 &r", "&7 &r");
 
-        HologramsAPI.registerPlaceholder(plugin, "{fast}", 0.1, new TimePlaceholdersUpdater(changingTextImitation));
-        HologramsAPI.registerPlaceholder(plugin, "{medium}", 1, new TimePlaceholdersUpdater(changingTextImitation));
-        HologramsAPI.registerPlaceholder(plugin, "{slow}", 10, new TimePlaceholdersUpdater(changingTextImitation));
+        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
+
+        api.registerGlobalPlaceholder("fast", new TimedPlaceholder(2));
+        api.registerGlobalPlaceholder("medium", new TimedPlaceholder(20));
+        api.registerGlobalPlaceholder("slow", new TimedPlaceholder(200));
+
+//        HologramsAPI.registerPlaceholder(plugin, "{fast}", 0.1, new TimePlaceholdersUpdater(changingTextImitation));
+//        HologramsAPI.registerPlaceholder(plugin, "{medium}", 1, new TimePlaceholdersUpdater(changingTextImitation));
+//        HologramsAPI.registerPlaceholder(plugin, "{slow}", 10, new TimePlaceholdersUpdater(changingTextImitation));
 
     }
 
     @Override
     public void unregisterPlaceholders(){
 
-        HologramsAPI.unregisterPlaceholder(plugin, "{fast}");
-        HologramsAPI.unregisterPlaceholder(plugin, "{medium}");
-        HologramsAPI.unregisterPlaceholder(plugin, "{slow}");
+
+        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
+        api.unregisterPlaceholder("fast");
+        api.unregisterPlaceholder("medium");
+        api.unregisterPlaceholder("slow");
+
+
+//        HologramsAPI.unregisterPlaceholder(plugin, "{fast}");
+//        HologramsAPI.unregisterPlaceholder(plugin, "{medium}");
+//        HologramsAPI.unregisterPlaceholder(plugin, "{slow}");
 
     }
 }

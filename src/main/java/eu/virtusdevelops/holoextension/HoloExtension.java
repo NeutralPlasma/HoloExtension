@@ -2,7 +2,6 @@ package eu.virtusdevelops.holoextension;
 
 import eu.virtusdevelops.holoextension.commands.TemporaryCommand;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
-import eu.virtusdevelops.holoextension.storage.Cache;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
 import eu.virtusdevelops.holoextension.storage.storages.FlatFileStorage;
 import eu.virtusdevelops.holoextension.storage.storages.MySQLStorage;
@@ -10,21 +9,17 @@ import eu.virtusdevelops.holoextension.storage.storages.SQLiteStorage;
 import eu.virtusdevelops.holoextension.utils.Metrics;
 import eu.virtusdevelops.virtuscore.gui.GuiListener;
 import eu.virtusdevelops.virtuscore.gui.Handler;
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class HoloExtension extends JavaPlugin {
 
-    private Economy econ;
     private ModuleManager moduleManager;
 //    private Cache cache;
 
     @Override
     public void onEnable() {
         // The enable stuff.
-        setupEconomy();
         saveDefaultConfig();
 
         // Cache
@@ -69,19 +64,5 @@ public class HoloExtension extends JavaPlugin {
     }
 
 
-    // Vault stuff down here...
-    private void setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return;
-        }
-        econ = rsp.getProvider();
-    }
 
-    public Economy getEcon(){
-        return econ;
-    }
 }

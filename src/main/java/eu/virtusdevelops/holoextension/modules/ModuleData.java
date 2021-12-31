@@ -1,6 +1,6 @@
 package eu.virtusdevelops.holoextension.modules;
 
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+//import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.utils.TextUtils;
 import eu.virtusdevelops.virtuscore.VirtusCore;

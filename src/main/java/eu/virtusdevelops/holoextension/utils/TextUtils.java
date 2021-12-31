@@ -16,11 +16,7 @@ public class TextUtils {
 
     public static String formatNumbers(Double number){
         DecimalFormat dformater = new DecimalFormat("###,###,###,###,###.###");
-
-        String formated = dformater.format(number);
-
-        return formated;
-
+        return dformater.format(number);
     }
 
     public static String formatNames(Double number){

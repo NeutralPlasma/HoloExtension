@@ -4,6 +4,8 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.utils.TextUtils;
 import eu.virtusdevelops.virtuscore.VirtusCore;
+import me.filoghost.holographicdisplays.api.beta.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.beta.internal.HolographicDisplaysAPIProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -68,27 +70,47 @@ public abstract class Module {
 
     // Placeholders
     public void registerPlaceholders(double delay){
+        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
+        String tempname = name.replace("%", "");
+
         for(int i = 1; i <= size; i++){
             int finalI = i;
-            String placeholder = "{he-" + name + "-" + i + "-value}";
-            HologramsAPI.registerPlaceholder(plugin, placeholder, delay, () -> {
-                // TODO: Add balance formaters.
+            String placeholder = "he-" + tempname + "-" + i + "-value";
+
+//            HologramsAPI.registerPlaceholder(plugin, placeholder, delay, () -> {
+//                // TODO: Add balance formaters.
+//                if(type == ModuleDataType.NUMBER){
+//                    return TextUtils.formatValue(format, getValue(finalI));
+//                }else{
+//                    return TextUtils.formatTime(getValue(finalI) * 1000);
+//                }
+//            });
+
+            api.registerGlobalPlaceholder(placeholder, (int) delay * 20, (da) -> {
                 if(type == ModuleDataType.NUMBER){
                     return TextUtils.formatValue(format, getValue(finalI));
                 }else{
                     return TextUtils.formatTime(getValue(finalI) * 1000);
                 }
             });
+
+
             placeholders.add(placeholder);
-            String placeholder2 = "{he-" + name + "-" + i + "-user}";
-            HologramsAPI.registerPlaceholder(plugin, placeholder2, delay, () -> getPlayer(finalI));
+            String placeholder2 = "he-" + tempname + "-" + i + "-user";
+
+            api.registerGlobalPlaceholder(placeholder2, (int) delay * 20, (da) -> getPlayer(finalI));
+
+//            HologramsAPI.registerPlaceholder(plugin, placeholder2, delay, () -> getPlayer(finalI));
+
             placeholders.add(placeholder2);
         }
     }
 
     public void unregisterPlaceholders(){
+        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
         for(String placeholder : placeholders){
-            HologramsAPI.unregisterPlaceholder(plugin, placeholder);
+            api.unregisterPlaceholder(placeholder);
+//            HologramsAPI.unregisterPlaceholder(plugin, placeholder);
         }
     }
 

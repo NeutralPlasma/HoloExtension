@@ -1,6 +1,6 @@
 name: HoloExtension
 main: eu.virtusdevelops.holoextension.HoloExtension
-version: 0.0.3 Alpha
+version: 0.0.4 Alpha
 api-version: "1.13"
 author: NeutralPlasma
 
