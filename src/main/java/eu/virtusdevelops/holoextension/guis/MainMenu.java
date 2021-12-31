@@ -8,8 +8,10 @@ import eu.virtusdevelops.holoextension.modules.PapiModule;
 import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
 import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
+import eu.virtusdevelops.virtuscore.utils.AbstractChatUtil;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -89,18 +91,19 @@ public class MainMenu {
         Icon papi_create_icon = new Icon(papi_create_item);
         papi_create_icon.addClickAction((player1 -> {
             //load();
-            new AnvilGUI.Builder()
-                    .plugin(plugin)
-                    .text("<PLACEHOLDER>")
-                    .onClose(HumanEntity::closeInventory)
-                    .onComplete((player3, s) -> {
-                        if (s.contains(" ") || s.isBlank()){
-                            return AnvilGUI.Response.text("Incorrect...");
-                        }else{
-                            finalConstructionMenu(s);
-                        }
-                        return AnvilGUI.Response.close();
-                    }).open(player);
+//            new AnvilGUI.Builder()
+//                    .plugin(plugin)
+//                    .text("<PLACEHOLDER>")
+//                    .onClose(HumanEntity::closeInventory)
+//                    .onComplete((player3, s) -> {
+//                        if (s.contains(" ") || s.isBlank()){
+//                            return AnvilGUI.Response.text("Incorrect...");
+//                        }else{
+//                            finalConstructionMenu(s);
+//                        }
+//                        return AnvilGUI.Response.close();
+//                    }).open(player);
+            createNewPapiModule();
         }));
         gui.setIcon(44, papi_create_icon);
 
@@ -124,22 +127,41 @@ public class MainMenu {
     // GUIS
 
     private void finalConstructionMenu(String name){
-        new AnvilGUI.Builder()
-                .plugin(plugin)
-                .text("<TIME:NUMBER>")
-                .onClose(player -> {
-                    player.closeInventory();
-                    load();
-                })
-                .onComplete((player, s) -> {
-                    try{
-                        ModuleDataType type = ModuleDataType.valueOf(s);
-                        moduleManager.createNewPapiModule(name, type);
-                        return AnvilGUI.Response.close();
-                    }catch (Exception error){
-                        return AnvilGUI.Response.text("Incorrect...");
-                    }
-                }).open(player);
+//        new AnvilGUI.Builder()
+//                .plugin(plugin)
+//                .text("<TIME:NUMBER>")
+//                .onClose(player -> {
+//                    player.closeInventory();
+//                    load();
+//                })
+//                .onComplete((player, s) -> {
+//                    try{
+//                        ModuleDataType type = ModuleDataType.valueOf(s);
+//                        moduleManager.createNewPapiModule(name, type);
+//                        return AnvilGUI.Response.close();
+//                    }catch (Exception error){
+//                        return AnvilGUI.Response.text("Incorrect...");
+//                    }
+//                }).open(player);
+
+
+        player.closeInventory();
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Please specify the if placeholder is time (TIME) or number (NUMBER) based: (example for %statistic_seconds_played% you would type TIME)"));
+
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+            if(event.getMessage().isBlank() || event.getMessage().contains(" ") && !(event.getMessage().equalsIgnoreCase("TIME") || event.getMessage().equalsIgnoreCase("NUMBER"))){
+                player.sendMessage(TextUtils.colorFormat("&cInvalid type please try again or type CANCEL to cancel"));
+                finalConstructionMenu(name);
+            }else{
+                ModuleDataType type = ModuleDataType.valueOf(event.getMessage());
+                moduleManager.createNewPapiModule(name, type);
+            }
+        }, plugin);
     }
 
 
@@ -178,6 +200,25 @@ public class MainMenu {
             }));
             gui.setIcon(43, icon);
         }
+    }
+
+    private void createNewPapiModule(){
+        player.closeInventory();
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Please specify the placeholder: (example: %statistic_seconds_played%)"));
+
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+            if(event.getMessage().isBlank() || event.getMessage().contains(" ")){
+                player.sendMessage(TextUtils.colorFormat("&cInvalid placeholder please try again or type CANCEL to cancel"));
+                createNewPapiModule();
+            }else{
+                finalConstructionMenu(event.getMessage());
+            }
+        }, plugin);
     }
 
 }

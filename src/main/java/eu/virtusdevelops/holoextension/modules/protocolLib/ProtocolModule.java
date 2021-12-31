@@ -10,12 +10,9 @@ import eu.virtusdevelops.holoextension.modules.ModuleDataType;
 import eu.virtusdevelops.holoextension.modules.ModuleType;
 import me.filoghost.holographicdisplays.api.beta.HolographicDisplaysAPI;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class ProtocolModule extends Module {
-    private HoloExtension plugin;
-    private long delay;
+    private final HoloExtension plugin;
+    private final long delay;
 
     public ProtocolModule(boolean updateOffline, String name, HoloExtension plugin, ModuleDataType type, ModuleType type1, long delay, long repeat, int size, boolean isEnabled, String callback) {
         super(updateOffline, name, plugin, type, type1, delay, repeat, size, isEnabled, callback,0);
@@ -60,7 +57,6 @@ public class ProtocolModule extends Module {
 
     @Override
     public void unregisterPlaceholders(){
-
 
         HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
         api.unregisterPlaceholder("fast");

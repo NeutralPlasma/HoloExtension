@@ -1,10 +1,7 @@
 package eu.virtusdevelops.holoextension.modules.protocolLib;
 
-import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import me.filoghost.holographicdisplays.api.beta.placeholder.GlobalPlaceholder;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class TimedPlaceholder implements GlobalPlaceholder {
 

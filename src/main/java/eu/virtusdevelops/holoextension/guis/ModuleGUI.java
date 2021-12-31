@@ -7,8 +7,10 @@ import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
 import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
+import eu.virtusdevelops.virtuscore.utils.AbstractChatUtil;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -65,46 +67,53 @@ public class ModuleGUI {
         ItemStack refresh = GuiUtils.editItem(Material.BOOK, "Refresh interval", String.valueOf(module.getRepeat()));
         Icon refresh_icon = new Icon(refresh);
         refresh_icon.addClickAction((player) -> {
-            new AnvilGUI.Builder()
-                    .plugin(plugin)
-                    .text("<INTERVAL>")
-                    .onClose(player1 -> {
-                        player1.closeInventory();
-                        load();
-                    })
-                    .onComplete((player1, s) -> {
-                        long number = Long.parseLong(s);
-                        if (number > 0){
-                            module.setRepeat(number);
-                            module.reload();
-                            moduleManager.updateModule(module);
-                            player.performCommand("hd reload");
-                        }
-                        return AnvilGUI.Response.close();
-                    }).open(player);
+            refreshIntervalMenu();
+//
+//
+//
+//
+//
+//            new AnvilGUI.Builder()
+//                    .plugin(plugin)
+//                    .text("<INTERVAL>")
+//                    .onClose(player1 -> {
+//                        player1.closeInventory();
+//                        load();
+//                    })
+//                    .onComplete((player1, s) -> {
+//                        long number = Long.parseLong(s);
+//                        if (number > 0){
+//                            module.setRepeat(number);
+//                            module.reload();
+//                            moduleManager.updateModule(module);
+//                            player.performCommand("hd reload");
+//                        }
+//                        return AnvilGUI.Response.close();
+//                    }).open(player);
         });
         gui.setIcon(13, refresh_icon);
         // size item
         ItemStack size = GuiUtils.editItem(Material.BOOK, "Leaderboard size", String.valueOf(module.getSize()));
         Icon size_icon = new Icon(size);
         size_icon.addClickAction((player) -> {
-            new AnvilGUI.Builder()
-                    .plugin(plugin)
-                    .text("<SIZE>")
-                    .onClose(player1 -> {
-                        player1.closeInventory();
-                        load();
-                    })
-                    .onComplete((player1, s) -> {
-                        int number = Integer.parseInt(s);
-                        if (number > 0){
-                            module.setSize(number);
-                            module.reload();
-                            moduleManager.updateModule(module);
-                            player.performCommand("hd reload");
-                        }
-                        return AnvilGUI.Response.close();
-                    }).open(player);
+            leaderboardSizeFunction();
+//            new AnvilGUI.Builder()
+//                    .plugin(plugin)
+//                    .text("<SIZE>")
+//                    .onClose(player1 -> {
+//                        player1.closeInventory();
+//                        load();
+//                    })
+//                    .onComplete((player1, s) -> {
+//                        int number = Integer.parseInt(s);
+//                        if (number > 0){
+//                            module.setSize(number);
+//                            module.reload();
+//                            moduleManager.updateModule(module);
+//                            player.performCommand("hd reload");
+//                        }
+//                        return AnvilGUI.Response.close();
+//                    }).open(player);
         });
         gui.setIcon(29, size_icon);
 
@@ -135,20 +144,21 @@ public class ModuleGUI {
         ItemStack noplayer = GuiUtils.editItem(Material.BOOK, "No player replacer", String.valueOf(module.getSize()));
         Icon noplayer_icon = new Icon(noplayer);
         noplayer_icon.addClickAction((player) -> {
-            new AnvilGUI.Builder()
-                    .plugin(plugin)
-                    .text("<TEXT>")
-                    .onClose(player1 -> {
-                        player1.closeInventory();
-                        load();
-                    })
-                    .onComplete((player1, s) -> {
-                        module.setNoplayer(s);
-                        module.reload();
-                        moduleManager.updateModule(module);
-                        player.performCommand("hd reload");
-                        return AnvilGUI.Response.close();
-                    }).open(player);
+            noPlayerFunction();
+//            new AnvilGUI.Builder()
+//                    .plugin(plugin)
+//                    .text("<TEXT>")
+//                    .onClose(player1 -> {
+//                        player1.closeInventory();
+//                        load();
+//                    })
+//                    .onComplete((player1, s) -> {
+//                        module.setNoplayer(s);
+//                        module.reload();
+//                        moduleManager.updateModule(module);
+//                        player.performCommand("hd reload");
+//                        return AnvilGUI.Response.close();
+//                    }).open(player);
         });
         gui.setIcon(16, noplayer_icon);
 
@@ -159,29 +169,31 @@ public class ModuleGUI {
         hologram_icon.addClickAction((player) -> {
 
 
+            createHologramFunction();
+
             // Change this anyway its ugly but works.
-            new AnvilGUI.Builder()
-                    .plugin(plugin)
-                    .text("<NAME>")
-                    .onClose(HumanEntity::closeInventory)
-                    .onComplete((player1, s) -> {
-                        // DISPATCH THE CREATION COMMANDS
-                        if(s.contains(" ")){
-                            player.sendMessage(TextUtils.colorFormat("&cYou can't use spaces in hologram name."));
-                            return AnvilGUI.Response.close();
-                        }
-
-                        player.performCommand("hd create " + s);
-                        for(int i = 1; i <= module.getSize(); i++){
-                            player.performCommand("hd addline " +
-                                    s +
-                                    " {he-" + module.getName() + "-" + i + "-user} - " +
-                                    "{he-" + module.getName() + "-" + i + "-value}");
-                        }
-                        player.performCommand("hd reload");
-
-                        return AnvilGUI.Response.close();
-                    }).open(player);
+//            new AnvilGUI.Builder()
+//                    .plugin(plugin)
+//                    .text("<NAME>")
+//                    .onClose(HumanEntity::closeInventory)
+//                    .onComplete((player1, s) -> {
+//                        // DISPATCH THE CREATION COMMANDS
+//                        if(s.contains(" ")){
+//                            player.sendMessage(TextUtils.colorFormat("&cYou can't use spaces in hologram name."));
+//                            return AnvilGUI.Response.close();
+//                        }
+//
+//                        player.performCommand("hd create " + s);
+//                        for(int i = 1; i <= module.getSize(); i++){
+//                            player.performCommand("hd addline " +
+//                                    s +
+//                                    " {he-" + module.getName() + "-" + i + "-user} - " +
+//                                    "{he-" + module.getName() + "-" + i + "-value}");
+//                        }
+//                        player.performCommand("hd reload");
+//
+//                        return AnvilGUI.Response.close();
+//                    }).open(player);
 
 
         });
@@ -189,6 +201,116 @@ public class ModuleGUI {
 
 
         player.openInventory(gui.getInventory());
+    }
+
+
+    private void createHologramFunction(){
+        player.closeInventory();
+
+
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Specify hologram name:"));
+
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+
+            if(event.getMessage().isBlank() || event.getMessage().contains(" ")){
+                player.sendMessage(TextUtils.colorFormat("&cInvalid hologram name please try again or type CANCEL to cancel"));
+                createHologramFunction();
+            }else{
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    player.performCommand("hd create " + event.getMessage());
+                    for(int i = 1; i <= module.getSize(); i++){
+                        player.performCommand("hd addline " +
+                                event.getMessage() +
+                                " {he-" + module.getRawName() + "-" + i + "-user} - " +
+                                "{he-" + module.getRawName() + "-" + i + "-value}");
+                    }
+
+                    player.performCommand("hd reload");
+                });
+
+            }
+
+        }, plugin);
+
+    }
+
+
+    private void noPlayerFunction(){
+        player.closeInventory();
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Type in the text that should be displayed when theres no player: (example: null)"));
+
+
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+            module.setNoplayer(event.getMessage());
+            module.reload();
+            moduleManager.updateModule(module);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                player.performCommand("hd reload");
+            });
+        }, plugin);
+    }
+
+    private void leaderboardSizeFunction(){
+        player.closeInventory();
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Type in the number of leaderboard size: (example: 10)"));
+
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+            int number = Integer.parseInt(event.getMessage());
+            if (number > 0){
+                module.setSize(number);
+                module.reload();
+                moduleManager.updateModule(module);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    player.performCommand("hd reload");
+                });
+            }else{
+                player.sendMessage(TextUtils.colorFormat("&cInvalid number please try again or type CANCEL to cancel"));
+                refreshIntervalMenu();
+            }
+        }, plugin);
+    }
+
+    // change module refresh interval.
+    private void refreshIntervalMenu(){
+        player.closeInventory();
+        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+        player.sendMessage(TextUtils.colorFormat("&7Type in the refresh rate of leaderboard in seconds: (example: 10)"));
+        new AbstractChatUtil(player, (event) -> {
+            if(event.getMessage().equalsIgnoreCase("cancel")){
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                return;
+            }
+            long number = Long.parseLong(event.getMessage());
+            if (number > 0){
+                module.setRepeat(number*20);
+                module.reload();
+                moduleManager.updateModule(module);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    player.performCommand("hd reload");
+                    load();
+                });
+            }else{
+                player.sendMessage(TextUtils.colorFormat("&cInvalid number please try again or type CANCEL to cancel"));
+                refreshIntervalMenu();
+            }
+        }, plugin);
     }
 
 }

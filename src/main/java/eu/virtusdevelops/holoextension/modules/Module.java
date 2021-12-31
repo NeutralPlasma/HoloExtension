@@ -154,6 +154,8 @@ public abstract class Module {
         return name;
     }
 
+    public String getRawName() { return name.replace("%", "");}
+
     public String getNoplayer() {
         return noplayer;
     }
