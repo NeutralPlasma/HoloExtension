@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'eu.virtusdevelops'
-version '0.0.4.1 Alpha'
+version '0.0.4.2 Alpha'
 
 repositories {
     mavenCentral()
@@ -37,15 +37,18 @@ repositories {
         }
     }
 
+    maven {
+        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+
     maven { url 'https://jitpack.io' }
     mavenLocal()
 }
 
 dependencies {
     compileOnly group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'me.clip:placeholderapi:2.10.4'
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.0"
-    compileOnly 'me.clip:placeholderapi:v2.10.5'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
     compileOnly group: 'com.gmail.filoghost.holographicdisplays', name: 'holographicdisplays-api', version: '2.4.9'
 
 

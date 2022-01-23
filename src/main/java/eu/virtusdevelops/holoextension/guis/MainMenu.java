@@ -203,22 +203,25 @@ public class MainMenu {
     }
 
     private void createNewPapiModule(){
-        player.closeInventory();
-        player.sendMessage(TextUtils.colorFormat("&d-------------------"));
-        player.sendMessage(TextUtils.colorFormat("&7Please specify the placeholder: (example: %statistic_seconds_played%)"));
+        Bukkit.getScheduler().runTask(plugin, runnable -> {
+            player.closeInventory();
+            player.sendMessage(TextUtils.colorFormat("&d-------------------"));
+            player.sendMessage(TextUtils.colorFormat("&7Please specify the placeholder: (example: %statistic_seconds_played%)"));
 
-        new AbstractChatUtil(player, (event) -> {
-            if(event.getMessage().equalsIgnoreCase("cancel")){
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
-                return;
-            }
-            if(event.getMessage().isBlank() || event.getMessage().contains(" ")){
-                player.sendMessage(TextUtils.colorFormat("&cInvalid placeholder please try again or type CANCEL to cancel"));
-                createNewPapiModule();
-            }else{
-                finalConstructionMenu(event.getMessage());
-            }
-        }, plugin);
+            new AbstractChatUtil(player, (event) -> {
+                if(event.getMessage().equalsIgnoreCase("cancel")){
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
+                    return;
+                }
+                if(event.getMessage().isBlank() || event.getMessage().contains(" ")){
+                    player.sendMessage(TextUtils.colorFormat("&cInvalid placeholder please try again or type CANCEL to cancel"));
+                    createNewPapiModule();
+                }else{
+                    finalConstructionMenu(event.getMessage());
+                }
+            }, plugin);
+        });
+
     }
 
 }
