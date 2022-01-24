@@ -205,28 +205,32 @@ public class ModuleGUI {
 
 
     private void createHologramFunction(){
-        player.closeInventory();
+        Bukkit.getScheduler().runTask(plugin,(runnable)-> {
+                player.closeInventory();
+        });
 
 
         player.sendMessage(TextUtils.colorFormat("&d-------------------"));
         player.sendMessage(TextUtils.colorFormat("&7Specify hologram name:"));
 
         new AbstractChatUtil(player, (event) -> {
-            if(event.getMessage().equalsIgnoreCase("cancel")){
+            String name = event.getMessage().replace(" ", "_");
+
+            if(name.equalsIgnoreCase("cancel")){
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
                 return;
             }
 
-            if(event.getMessage().isBlank() || event.getMessage().contains(" ")){
+            if(name.isBlank()){
                 player.sendMessage(TextUtils.colorFormat("&cInvalid hologram name please try again or type CANCEL to cancel"));
                 createHologramFunction();
             }else{
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    player.performCommand("hd create " + event.getMessage());
+                    player.performCommand("hd create " + name);
                     for(int i = 1; i <= module.getSize(); i++){
                         player.performCommand("hd addline " +
-                                event.getMessage() +
+                                name +
                                 " {he-" + module.getRawName() + "-" + i + "-user} - " +
                                 "{he-" + module.getRawName() + "-" + i + "-value}");
                     }
@@ -242,7 +246,9 @@ public class ModuleGUI {
 
 
     private void noPlayerFunction(){
-        player.closeInventory();
+        Bukkit.getScheduler().runTask(plugin,(runnable)-> {
+            player.closeInventory();
+        });
         player.sendMessage(TextUtils.colorFormat("&d-------------------"));
         player.sendMessage(TextUtils.colorFormat("&7Type in the text that should be displayed when theres no player: (example: null)"));
 
@@ -262,7 +268,9 @@ public class ModuleGUI {
     }
 
     private void leaderboardSizeFunction(){
-        player.closeInventory();
+        Bukkit.getScheduler().runTask(plugin,(runnable)-> {
+            player.closeInventory();
+        });
         player.sendMessage(TextUtils.colorFormat("&d-------------------"));
         player.sendMessage(TextUtils.colorFormat("&7Type in the number of leaderboard size: (example: 10)"));
 
@@ -289,7 +297,9 @@ public class ModuleGUI {
 
     // change module refresh interval.
     private void refreshIntervalMenu(){
-        player.closeInventory();
+        Bukkit.getScheduler().runTask(plugin,(runnable)-> {
+            player.closeInventory();
+        });
         player.sendMessage(TextUtils.colorFormat("&d-------------------"));
         player.sendMessage(TextUtils.colorFormat("&7Type in the refresh rate of leaderboard in seconds: (example: 10)"));
         new AbstractChatUtil(player, (event) -> {

@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'eu.virtusdevelops'
-version '0.0.4.2 Alpha'
+version '0.0.4.3 Alpha'
 
 repositories {
     mavenCentral()
