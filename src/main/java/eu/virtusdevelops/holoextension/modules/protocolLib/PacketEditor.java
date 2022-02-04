@@ -34,7 +34,9 @@ public class PacketEditor extends PacketAdapter{
             PacketContainer packet = event.getPacket();
 
             if (packet.getType() == PacketType.Play.Server.ENTITY_METADATA) {
-                final WrapperPlayServerEntityMetadata entityMetadataPacket = new WrapperPlayServerEntityMetadata(packet.deepClone());
+
+
+                final WrapperPlayServerEntityMetadata entityMetadataPacket = new WrapperPlayServerEntityMetadata(packet);
                 final List<WrappedWatchableObject> dataWatcherValues = entityMetadataPacket.getMetadata();
                 for (final WrappedWatchableObject watchableObject : dataWatcherValues) {
                     if (watchableObject.getIndex() == 2) {
@@ -61,7 +63,7 @@ public class PacketEditor extends PacketAdapter{
             }
             final Optional<?> customNameOptional = (Optional<?>)customNameWatchableObjectValue;
 
-            if (!customNameOptional.isPresent()) {
+            if (customNameOptional.isEmpty()) {
                 return false;
             }
             final WrappedChatComponent componentWrapper = WrappedChatComponent.fromHandle(customNameOptional.get());
@@ -74,15 +76,8 @@ public class PacketEditor extends PacketAdapter{
         newName = PlaceholderAPI.setPlaceholders(player, newName);
 
 
-
-        //newName = HexUtil.colorify(newName);
-        //VirtusCore.console().sendMessage("Value: << " + newName + " >>");
-        //player.sendMessage(newName);
-        //String test = HexUtil.colorify("<r>This is a test message lets see if it works");
-
         if (this.useOptional) {
-
-            customNameWatchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(newName).getHandle() /*WrappedChatComponent.fromChatMessage(test)[0].getHandle()*/));
+            customNameWatchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(newName).getHandle()));
         } else {
             customNameWatchableObject.setValue(newName);
         }

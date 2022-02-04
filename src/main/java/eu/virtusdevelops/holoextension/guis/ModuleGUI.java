@@ -3,16 +3,13 @@ package eu.virtusdevelops.holoextension.guis;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.modules.Module;
 import eu.virtusdevelops.holoextension.modules.ModuleManager;
-import eu.virtusdevelops.holoextension.modules.ModuleType;
 import eu.virtusdevelops.holoextension.utils.GuiUtils;
 import eu.virtusdevelops.virtuscore.gui.Icon;
 import eu.virtusdevelops.virtuscore.gui.InventoryCreator;
 import eu.virtusdevelops.virtuscore.utils.AbstractChatUtil;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
-import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -214,14 +211,14 @@ public class ModuleGUI {
         player.sendMessage(TextUtils.colorFormat("&7Specify hologram name:"));
 
         new AbstractChatUtil(player, (event) -> {
-            String name = event.getMessage().replace(" ", "_");
+            String name = event.getMessage().replace(" ", "");
 
             if(name.equalsIgnoreCase("cancel")){
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::load);
                 return;
             }
 
-            if(name.isBlank()){
+            if(name.isEmpty()){
                 player.sendMessage(TextUtils.colorFormat("&cInvalid hologram name please try again or type CANCEL to cancel"));
                 createHologramFunction();
             }else{
