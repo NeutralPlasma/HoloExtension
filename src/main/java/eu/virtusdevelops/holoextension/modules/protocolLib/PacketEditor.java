@@ -9,7 +9,6 @@ import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import eu.virtusdevelops.virtuscore.compatibility.ServerVersion;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
-import org.json.simple.parser.JSONParser;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +16,6 @@ import java.util.Optional;
 
 public class PacketEditor extends PacketAdapter{
     private boolean useOptional;
-    private JSONParser parser = new JSONParser();
 
     public PacketEditor(final AdapterParameteters params){
         super(params);

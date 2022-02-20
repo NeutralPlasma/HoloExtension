@@ -6,7 +6,7 @@
 # for each placeholder replace # with position for example
 # {he-baltop-1-user} {he-baltop-2-user} {he-baltop-3-user}
 
-version: 0.0.4.3 Alpha
+version: 0.0.4.4 Alpha
 
 system:
   storage_type: "SQL"

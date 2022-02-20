@@ -3,8 +3,6 @@ package eu.virtusdevelops.holoextension.modules.protocolLib;
 
 import com.gmail.filoghost.holographicdisplays.api.placeholder.PlaceholderReplacer;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
-import me.filoghost.holographicdisplays.api.beta.placeholder.GlobalPlaceholder;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
