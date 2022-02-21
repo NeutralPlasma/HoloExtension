@@ -4,8 +4,6 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.utils.TextUtils;
 import eu.virtusdevelops.virtuscore.VirtusCore;
-import me.filoghost.holographicdisplays.api.beta.HolographicDisplaysAPI;
-import me.filoghost.holographicdisplays.api.beta.internal.HolographicDisplaysAPIProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;

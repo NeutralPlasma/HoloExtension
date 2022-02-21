@@ -27,7 +27,7 @@ public class LeaderBoardManager {
         if(!leaderboards.get(board).containsKey(position)){
             // add new
             leaderboards.get(board).put(position, new LeaderBoardEntry(
-                    plugin, position, null, "---", board, 0.0, "", ""
+                    plugin, position, null, "---", 0.0, "", ""
             ));
             refreshes.get(board).put(position, 0.0);
         }
@@ -39,7 +39,10 @@ public class LeaderBoardManager {
         }
 
         return leaderboards.get(board).get(position);
+    }
 
+
+    public void registerLeaderboard(){
 
     }
 }

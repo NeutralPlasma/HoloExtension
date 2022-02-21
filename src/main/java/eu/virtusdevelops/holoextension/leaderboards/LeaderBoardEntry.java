@@ -8,10 +8,8 @@ import java.util.UUID;
 
 public class LeaderBoardEntry {
     private String playerName;
-    private HoloExtension plugin;
     private int position;
     private UUID uuidPlayer;
-    private String boardName;
 
     private String prefix;
     private String suffix;
@@ -19,13 +17,11 @@ public class LeaderBoardEntry {
     double value;
 
 
-    public LeaderBoardEntry(HoloExtension holoExtension, int position, UUID uuid, String playerName, String boardName, double value,
+    public LeaderBoardEntry(int position, UUID uuid, String playerName, double value,
                             String prefix, String suffix){
         this.playerName = playerName;
         this.position = position;
-        this.plugin = holoExtension;
         this.uuidPlayer = uuid;
-        this.boardName = boardName;
         this.value = value;
         this.prefix = prefix;
         this.suffix = suffix;
@@ -42,10 +38,6 @@ public class LeaderBoardEntry {
 
     public int getPosition() {
         return position;
-    }
-
-    public String getBoardName() {
-        return boardName;
     }
 
     public String getPrefix() {
