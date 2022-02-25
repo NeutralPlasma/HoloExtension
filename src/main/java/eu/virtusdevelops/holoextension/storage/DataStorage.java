@@ -29,4 +29,5 @@ public interface DataStorage {
     void updateMultiple(String boardName, List<LeaderBoardEntry> data);
 
     LeaderBoardEntry getData(String boardName, int position);
+
 }
