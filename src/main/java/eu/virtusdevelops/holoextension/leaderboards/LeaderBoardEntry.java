@@ -54,6 +54,6 @@ public class LeaderBoardEntry {
 
     public String getFormated(){
         // return formats blabla..
-        return "";
+        return "" + value;
     }
 }

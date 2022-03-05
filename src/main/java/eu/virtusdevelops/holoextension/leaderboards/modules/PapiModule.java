@@ -2,37 +2,33 @@ package eu.virtusdevelops.holoextension.leaderboards.modules;
 
 import eu.virtusdevelops.holoextension.leaderboards.LeaderBoardEntry;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
-import eu.virtusdevelops.virtuscore.VirtusCore;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
-public class BalTopModule implements DefaultModule{
+public class PapiModule implements DefaultModule{
     private boolean tickOffline;
-    private Economy economy;
-    private String name = "baltop";
+    private String name;
     private DataStorage storage;
 
 
-    public BalTopModule(boolean tickOffline, DataStorage storage) {
-        setupEconomy();
+    public PapiModule(boolean tickOffline, String name, DataStorage storage) {
         this.tickOffline = tickOffline;
         this.storage = storage;
+        this.name = name;
     }
 
 
     @Override
-    public void tick(){
-        VirtusCore.console().sendMessage("TICKING:.....");
+    public void tick() {
         for(Player player : Bukkit.getOnlinePlayers()){
             storage.addUser(name, new LeaderBoardEntry(
                     0,
                     player.getUniqueId(),
                     player.getName(),
-                    economy.getBalance(player),
+                    Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
                     PlaceholderAPI.setPlaceholders(player, "%vault_prefix%"),
                     PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
             ));
@@ -45,7 +41,7 @@ public class BalTopModule implements DefaultModule{
                         0,
                         player.getUniqueId(),
                         player.getName(),
-                        economy.getBalance(player),
+                        Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
                         "",
                         ""
                 ));
@@ -54,11 +50,11 @@ public class BalTopModule implements DefaultModule{
     }
 
 
+
     @Override
     public void init(){
         storage.createTable(name);
     }
-
 
     @Override
     public String getName() {
@@ -67,19 +63,6 @@ public class BalTopModule implements DefaultModule{
 
     @Override
     public String getNameFormated() {
-        return name;
+        return name.replace("%", "");
     }
-
-
-    private void setupEconomy() {
-        if (VirtusCore.server().getPluginManager().getPlugin("Vault") == null) {
-            return;
-        }
-        RegisteredServiceProvider<Economy> rsp = VirtusCore.server().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return;
-        }
-        economy = rsp.getProvider();
-    }
-
 }

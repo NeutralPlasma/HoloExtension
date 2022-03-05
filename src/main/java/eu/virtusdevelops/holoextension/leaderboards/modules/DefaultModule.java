@@ -7,4 +7,5 @@ public interface DefaultModule {
     void init();
     void tick();
     String getName();
+    String getNameFormated();
 }

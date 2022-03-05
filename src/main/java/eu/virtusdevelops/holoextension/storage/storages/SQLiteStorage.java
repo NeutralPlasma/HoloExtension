@@ -36,7 +36,7 @@ public class SQLiteStorage implements DataStorage {
 
         HikariConfig config = new HikariConfig();
 
-        File file = new File(plugin.getDataFolder(), "storage.db");
+        File file = new File(plugin.getDataFolder(), "storage.sqlite");
         if(!file.exists()){
             try {
                 file.createNewFile();
@@ -49,10 +49,9 @@ public class SQLiteStorage implements DataStorage {
         config.setPoolName("Storage");
         config.setMaximumPoolSize(10);
         config.setConnectionTimeout(25000);
-//        config.setConnectionTestQuery("SELECT 1");
-
         hikari = new HikariDataSource(config);
 
+        this.tablePrefix = "holoextension_";
 
 
         this.plugin = plugin;
@@ -64,7 +63,7 @@ public class SQLiteStorage implements DataStorage {
                 "name VARCHAR(30)," +
                 "prefix VARCHAR(255)," +
                 "suffix VARCHAR(255)," +
-                "uuid VARCHAR(36)," +
+                "uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
                 "value DOUBLE" +
                 ")";
         try(Connection connection = hikari.getConnection()){
@@ -77,8 +76,7 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void addUser(String boardName, LeaderBoardEntry data){
 
-        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE name = ?, prefix = ?, suffix = ?, uuid = ?, value = ?";
+        String SQL = "REPLACE INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
@@ -89,14 +87,9 @@ public class SQLiteStorage implements DataStorage {
             statement.setString(4, data.getUuidPlayer().toString());
             statement.setDouble(5, data.getValue());
 
-            statement.setString(6, data.getPlayer());
-            statement.setString(7, data.getPrefix());
-            statement.setString(8, data.getSuffix());
-            statement.setString(9, data.getUuidPlayer().toString());
-            statement.setDouble(10, data.getValue());
-
             statement.execute();
         }catch (SQLException error){
+            error.printStackTrace();
             // print error to console
         }
     }
@@ -104,8 +97,7 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void addOfflineUser(String boardName, LeaderBoardEntry data){
 
-        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE name = ?, uuid = ?, value = ?";
+        String SQL = "REPLACE INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
@@ -116,13 +108,9 @@ public class SQLiteStorage implements DataStorage {
             statement.setString(4, data.getUuidPlayer().toString());
             statement.setDouble(5, data.getValue());
 
-            statement.setString(6, data.getPlayer());
-            statement.setString(7, data.getUuidPlayer().toString());
-            statement.setDouble(8, data.getValue());
-
             statement.execute();
         }catch (SQLException error){
-            // print error to console
+            error.printStackTrace();
         }
     }
 
@@ -167,18 +155,19 @@ public class SQLiteStorage implements DataStorage {
                 return new LeaderBoardEntry(
                         position,
                         UUID.fromString(set.getString("uuid")),
-                            set.getString("name"),
-                            set.getDouble("value"),
-                            set.getString("prefix"),
-                            set.getString("suffix")
-                        );
+                        set.getString("name"),
+                        set.getDouble("value"),
+                        set.getString("prefix"),
+                        set.getString("suffix")
+                );
             }
 
         }catch(SQLException error){
+            error.printStackTrace();
             return new LeaderBoardEntry(position, UUID.randomUUID(), "----", 0.0, "", "");
         }
 
-        return null;
+        return new LeaderBoardEntry(position, UUID.randomUUID(), "----", 0.0, "", "");
     }
 
 }
