@@ -1,6 +1,7 @@
 package eu.virtusdevelops.holoextension.leaderboards;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
+import eu.virtusdevelops.holoextension.leaderboards.modules.DefaultModule;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public class LeaderBoardManager {
     private final HoloExtension plugin;
     private final DataStorage storage;
 
+    private List<DefaultModule> modules = new ArrayList<>();
     private HashMap<String, HashMap<Integer, LeaderBoardEntry>> leaderboards = new HashMap<>(); // cache for leaderboards.
     private HashMap<String, HashMap<Integer, Double>> refreshes = new HashMap<>(); // store values when each slot was last refreshed.
 
@@ -31,7 +33,7 @@ public class LeaderBoardManager {
         if(!leaderboards.get(board).containsKey(position)){
             // add new
             leaderboards.get(board).put(position, new LeaderBoardEntry(
-                    position, null, "---", 0.0, "", ""
+                    position, null, "----", 0.0, "", ""
             ));
             refreshes.get(board).put(position, 0.0);
         }
@@ -45,8 +47,18 @@ public class LeaderBoardManager {
         return leaderboards.get(board).get(position);
     }
 
+    // tick
+    public void tick(){
+        // go thru cache and cache it
 
-    public void registerLeaderboard(){
 
+        // tick every module
+        modules.forEach(DefaultModule::tick);
+    }
+
+
+    public void registerLeaderboard(DefaultModule module){
+        module.init();
+        modules.add(module);
     }
 }

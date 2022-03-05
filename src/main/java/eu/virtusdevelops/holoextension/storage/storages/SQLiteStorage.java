@@ -77,15 +77,24 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void addUser(String boardName, LeaderBoardEntry data){
 
-        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE name = ?, prefix = ?, suffix = ?, uuid = ?, value = ?";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
+
             statement.setString(1, data.getPlayer());
             statement.setString(2, data.getPrefix());
             statement.setString(3, data.getSuffix());
             statement.setString(4, data.getUuidPlayer().toString());
             statement.setDouble(5, data.getValue());
+
+            statement.setString(6, data.getPlayer());
+            statement.setString(7, data.getPrefix());
+            statement.setString(8, data.getSuffix());
+            statement.setString(9, data.getUuidPlayer().toString());
+            statement.setDouble(10, data.getValue());
+
             statement.execute();
         }catch (SQLException error){
             // print error to console
@@ -93,16 +102,24 @@ public class SQLiteStorage implements DataStorage {
     }
 
     @Override
-    public void updateUser(String boardName, LeaderBoardEntry data){
-        String SQL = "UPDATE " + tablePrefix + boardName + "SET name = ?, prefix = ?, suffix = ?value = ? WHERE uuid = ?";
+    public void addOfflineUser(String boardName, LeaderBoardEntry data){
+
+        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE name = ?, uuid = ?, value = ?";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
+
             statement.setString(1, data.getPlayer());
             statement.setString(2, data.getPrefix());
             statement.setString(3, data.getSuffix());
-            statement.setDouble(4, data.getValue());
-            statement.setString(5, data.getUuidPlayer().toString());
+            statement.setString(4, data.getUuidPlayer().toString());
+            statement.setDouble(5, data.getValue());
+
+            statement.setString(6, data.getPlayer());
+            statement.setString(7, data.getUuidPlayer().toString());
+            statement.setDouble(8, data.getValue());
+
             statement.execute();
         }catch (SQLException error){
             // print error to console
@@ -129,23 +146,7 @@ public class SQLiteStorage implements DataStorage {
         }
 
     }
-    @Override
-    public void updateMultiple(String boardName, List<LeaderBoardEntry> data){
-        String SQL = "UPDATE " + tablePrefix + boardName + "SET name = ?, prefix = ?, suffix = ?value = ? WHERE uuid = ?";
-        try(Connection connection = hikari.getConnection()){
-            for(LeaderBoardEntry entry : data){
-                PreparedStatement statement = connection.prepareStatement(SQL);
-                statement.setString(1, entry.getPlayer());
-                statement.setString(2, entry.getPrefix());
-                statement.setString(3, entry.getSuffix());
-                statement.setDouble(4, entry.getValue());
-                statement.setString(5, entry.getUuidPlayer().toString());
-                statement.execute();
-            }
-        }catch (SQLException error){
-            // print error to console
-        }
-    }
+
 
 
     @Override

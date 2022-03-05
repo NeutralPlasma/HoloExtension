@@ -25,8 +25,9 @@ public interface DataStorage {
     void addUser(String boardName, LeaderBoardEntry data);
     void addMultiple(String boardName, List<LeaderBoardEntry> data);
 
-    void updateUser(String boardName, LeaderBoardEntry data);
-    void updateMultiple(String boardName, List<LeaderBoardEntry> data);
+
+    void addOfflineUser(String boardName, LeaderBoardEntry data);
+
 
     LeaderBoardEntry getData(String boardName, int position);
 
