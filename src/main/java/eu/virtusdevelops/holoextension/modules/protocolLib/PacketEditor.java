@@ -7,7 +7,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import eu.virtusdevelops.virtuscore.compatibility.ServerVersion;
+import eu.virtusdevelops.virtuscore.utils.HexUtil;
+import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.craftbukkit.libs.org.apache.commons.codec.binary.Hex;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -72,6 +75,7 @@ public class PacketEditor extends PacketAdapter{
         }
 
         newName = PlaceholderAPI.setPlaceholders(player, newName);
+        //newName = HexUtil.colorify(newName, false);
 
 
         if (this.useOptional) {
