@@ -8,4 +8,5 @@ public interface DefaultModule {
     void tick();
     String getName();
     String getNameFormated();
+    int getFormat();
 }

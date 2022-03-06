@@ -42,7 +42,6 @@ public class TextUtils {
     }
 
     public static String formatTime(double time) {
-        time /= 1000L;
         final int days = (int)(time / 86400L);
         time -= 86400 * days;
         final int hours = (int)(time / 3600L);

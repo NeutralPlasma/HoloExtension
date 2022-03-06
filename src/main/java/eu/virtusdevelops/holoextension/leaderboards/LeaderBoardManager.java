@@ -9,6 +9,7 @@ import eu.virtusdevelops.holoextension.storage.DataStorage;
 import eu.virtusdevelops.virtuscore.VirtusCore;
 import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -32,13 +33,7 @@ public class LeaderBoardManager {
         this.storage = storage;
 
 
-        // register baltop
-        registerLeaderboard(new BalTopModule(
-                true,
-                storage
-        ));
-
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 10L, 100L);
+        load();
     }
 
 
@@ -67,6 +62,43 @@ public class LeaderBoardManager {
         return leaderboards.get(board).get(position);
     }
 
+    public void load() {
+        // load modules
+        registerLeaderboard(new BalTopModule(
+                plugin.getConfig().getBoolean("modules.baltop.updateOffline"),
+                storage,
+                plugin.getConfig().getInt("modules.baltop.format")
+        ));
+
+        // load papi modules
+        for(String moduleName : plugin.getConfig().getConfigurationSection("papi").getKeys(false)){
+            ConfigurationSection section = plugin.getConfig().getConfigurationSection("papi." + moduleName);
+            registerLeaderboard(new PapiModule(
+                    section.getBoolean("updateOffline"),
+                    moduleName,
+                    storage,
+                    section.getInt("format")
+            ));
+        }
+
+        // start updating task
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 10L, 100L);
+    }
+
+    public void reload(){
+        task.cancel();
+        for(DefaultModule module : modules){
+            unregisterPlaceholders(module.getName());
+        }
+        modules.clear();
+        refreshes.clear();
+        leaderboards.clear();
+        toCache.clear();
+
+        // load modules
+        load();
+    }
+
     // tick
     public void tick(){
         // go thru cache and cache it
@@ -83,11 +115,6 @@ public class LeaderBoardManager {
         modules.forEach(DefaultModule::tick);
     }
 
-
-    public void addPapiLeaderboard(String placeholder){
-        DefaultModule module = new PapiModule(false, placeholder, storage);
-        registerLeaderboard(module);
-    }
 
 
     public void registerLeaderboard(DefaultModule module){
@@ -109,7 +136,7 @@ public class LeaderBoardManager {
             HologramsAPI.registerPlaceholder(plugin, suffixPlaceholder, 10, () -> getData(module.getName(), finalI).getSuffix());
 
             String valuePlaceholder = "he_" + module.getNameFormated() + "_" + i + "_value";
-            HologramsAPI.registerPlaceholder(plugin, valuePlaceholder, 10, () -> getData(module.getName(), finalI).getFormated());
+            HologramsAPI.registerPlaceholder(plugin, valuePlaceholder, 10, () -> getData(module.getName(), finalI).getFormated(module.getFormat()));
 
         }
 
@@ -117,7 +144,6 @@ public class LeaderBoardManager {
 
     public void unregisterPlaceholders(String name){
         for(int i = 1; i <= 10; i++){
-            int finalI = i;
             String namePlaceholder = "he_" + name + "_" + i + "_name";
             HologramsAPI.unregisterPlaceholder(plugin, namePlaceholder);
 
@@ -129,7 +155,6 @@ public class LeaderBoardManager {
 
             String valuePlaceholder = "he_" + name + "_" + i + "_value";
             HologramsAPI.unregisterPlaceholder(plugin, valuePlaceholder);
-
         }
     }
 }

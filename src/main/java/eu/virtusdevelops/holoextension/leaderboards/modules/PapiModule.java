@@ -12,12 +12,14 @@ public class PapiModule implements DefaultModule{
     private boolean tickOffline;
     private String name;
     private DataStorage storage;
+    private int format;
 
 
-    public PapiModule(boolean tickOffline, String name, DataStorage storage) {
+    public PapiModule(boolean tickOffline, String name, DataStorage storage, int format) {
         this.tickOffline = tickOffline;
         this.storage = storage;
         this.name = name;
+        this.format = format;
     }
 
 
@@ -37,11 +39,12 @@ public class PapiModule implements DefaultModule{
 
         if(tickOffline){
             for(OfflinePlayer player: Bukkit.getOfflinePlayers()){
+                double value = parseStringToDouble(PlaceholderAPI.setPlaceholders(player, name));
                 storage.addOfflineUser(name, new LeaderBoardEntry(
                         0,
                         player.getUniqueId(),
                         player.getName(),
-                        Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
+                        value,
                         "",
                         ""
                 ));
@@ -64,5 +67,14 @@ public class PapiModule implements DefaultModule{
     @Override
     public String getNameFormated() {
         return name.replace("%", "");
+    }
+
+    @Override
+    public int getFormat() {
+        return format;
+    }
+
+    private static double parseStringToDouble(String value) {
+        return value == null || value.isEmpty() ? 0.0 : Double.parseDouble(value);
     }
 }

@@ -6,7 +6,7 @@
 # for each placeholder replace # with position for example
 # {he-baltop-1-user} {he-baltop-2-user} {he-baltop-3-user}
 
-version: 0.0.4.2 Alpha
+version: 0.1.0.0 Alpha
 
 system:
   storage_type: "SQL"
@@ -26,11 +26,9 @@ modules:
   # {he-baltop-#-user}
   # {he-baltop-#-value}
   baltop:
-    interval: 200
-    noplayer: "unknown"
     updateOffline: true
-    size: 10
     enabled: true
+    format: 3
 
   # protocollib module:
   # placeholders:
@@ -39,11 +37,6 @@ modules:
   # {fast} - 0.1 second
   ProtocolLib:
     enabled: true
-    updateOffline: true
-    type: NUMBER
-    interval: 200
-    size: 10
-    noplayer: 'NULL'
 
 
 papi:
@@ -52,9 +45,7 @@ papi:
   # {he-%statistic_seconds_played%-#-user}
   # {he-%statistic_seconds_played%-#-value}
   "%statistic_seconds_played%":  # Change this crap
-    interval: 200
-    noplayer: "unknown"
     updateOffline: true
     size: 10
-    type: "time"
     enabled: true
+    format: 4

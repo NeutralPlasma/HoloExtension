@@ -15,18 +15,19 @@ public class BalTopModule implements DefaultModule{
     private Economy economy;
     private String name = "baltop";
     private DataStorage storage;
+    private int format;
 
 
-    public BalTopModule(boolean tickOffline, DataStorage storage) {
+    public BalTopModule(boolean tickOffline, DataStorage storage, int format) {
         setupEconomy();
         this.tickOffline = tickOffline;
         this.storage = storage;
+        this.format = format;
     }
 
 
     @Override
     public void tick(){
-        VirtusCore.console().sendMessage("TICKING:.....");
         for(Player player : Bukkit.getOnlinePlayers()){
             storage.addUser(name, new LeaderBoardEntry(
                     0,
@@ -37,8 +38,6 @@ public class BalTopModule implements DefaultModule{
                     PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
             ));
         }
-
-
         if(tickOffline){
             for(OfflinePlayer player: Bukkit.getOfflinePlayers()){
                 storage.addOfflineUser(name, new LeaderBoardEntry(
@@ -68,6 +67,11 @@ public class BalTopModule implements DefaultModule{
     @Override
     public String getNameFormated() {
         return name;
+    }
+
+    @Override
+    public int getFormat() {
+        return format;
     }
 
 

@@ -1,6 +1,7 @@
 package eu.virtusdevelops.holoextension.leaderboards;
 
 import eu.virtusdevelops.holoextension.HoloExtension;
+import eu.virtusdevelops.holoextension.utils.TextUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -52,8 +53,11 @@ public class LeaderBoardEntry {
         return uuidPlayer;
     }
 
-    public String getFormated(){
+    public String getFormated(int format){
         // return formats blabla..
-        return "" + value;
+        if(format == 4){
+            return TextUtils.formatTime(value);
+        }
+        return TextUtils.formatValue(format, value);
     }
 }

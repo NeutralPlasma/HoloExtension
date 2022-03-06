@@ -76,7 +76,7 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void addUser(String boardName, LeaderBoardEntry data){
 
-        String SQL = "REPLACE INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
+        String SQL = "REPLACE INTO  `" + tablePrefix + boardName + "`(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
@@ -97,7 +97,10 @@ public class SQLiteStorage implements DataStorage {
     @Override
     public void addOfflineUser(String boardName, LeaderBoardEntry data){
 
-        String SQL = "REPLACE INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO `" + tablePrefix + boardName + "`(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)" +
+                "ON CONFLICT(uuid) DO UPDATE SET value = ?";
+
+        //String SQL = "REPLACE INTO  `" + tablePrefix + boardName + "`(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
         // async execute sql xd
         try(Connection connection = hikari.getConnection()){
             PreparedStatement statement = connection.prepareStatement(SQL);
@@ -107,6 +110,7 @@ public class SQLiteStorage implements DataStorage {
             statement.setString(3, data.getSuffix());
             statement.setString(4, data.getUuidPlayer().toString());
             statement.setDouble(5, data.getValue());
+            statement.setDouble(6, data.getValue());
 
             statement.execute();
         }catch (SQLException error){
@@ -117,8 +121,7 @@ public class SQLiteStorage implements DataStorage {
 
     @Override
     public void addMultiple(String boardName, List<LeaderBoardEntry> data){
-        String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE name = ?, prefix = ?, suffix = ?, uuid = ?, value = ?";
+        String SQL = "REPLACE INTO `" + tablePrefix + boardName + "`(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection connection = hikari.getConnection()){
             for(LeaderBoardEntry entry : data){
@@ -128,12 +131,6 @@ public class SQLiteStorage implements DataStorage {
                 statement.setString(3, entry.getSuffix());
                 statement.setString(4, entry.getUuidPlayer().toString());
                 statement.setDouble(5, entry.getValue());
-
-                statement.setString(6, entry.getPlayer());
-                statement.setString(7, entry.getPrefix());
-                statement.setString(8, entry.getSuffix());
-                statement.setString(9, entry.getUuidPlayer().toString());
-                statement.setDouble(10, entry.getValue());
 
                 statement.execute();
             }
