@@ -53,7 +53,7 @@ public class LeaderBoardManager {
 
         if(refreshes.get(board).containsKey(position)){
             if(System.currentTimeMillis() - refreshes.get(board).get(position) > 25000){
-                VirtusCore.console().sendMessage("Caching new user");
+                //VirtusCore.console().sendMessage("Caching new user");
                 refreshes.get(board).put(position, System.currentTimeMillis());
                 toCache.add(new CacheItem(position, board));
             }
@@ -82,7 +82,7 @@ public class LeaderBoardManager {
         }
 
         // start updating task
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 10L, 100L);
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::tick, 10L, 400L);
     }
 
     public void reload(){
@@ -107,7 +107,7 @@ public class LeaderBoardManager {
         for(CacheItem item : temp){
             leaderboards.get(item.getBoard()).put(item.getPosition(),storage.getData(item.getBoard(), item.getPosition()));
             refreshes.get(item.getBoard()).put(item.getPosition(), System.currentTimeMillis());
-            VirtusCore.console().sendMessage("Caching pos: " + item.getPosition() + " on board: " + item.getBoard());
+            //VirtusCore.console().sendMessage("Caching pos: " + item.getPosition() + " on board: " + item.getBoard());
         }
         temp.clear();
 

@@ -1,9 +1,6 @@
 package eu.virtusdevelops.holoextension.leaderboards;
 
-import eu.virtusdevelops.holoextension.HoloExtension;
 import eu.virtusdevelops.holoextension.utils.TextUtils;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 

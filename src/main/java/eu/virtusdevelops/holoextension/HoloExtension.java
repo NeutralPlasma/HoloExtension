@@ -1,5 +1,6 @@
 package eu.virtusdevelops.holoextension;
 
+import eu.virtusdevelops.holoextension.commands.MainCommand;
 import eu.virtusdevelops.holoextension.leaderboards.LeaderBoardManager;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
 import eu.virtusdevelops.holoextension.storage.storages.MySQLStorage;
@@ -26,7 +27,6 @@ public class HoloExtension extends JavaPlugin {
 //        cache.setup();
         // init storage stuff
         DataStorage storage = switch (getConfig().getString("system.storage_type").toLowerCase()) {
-            case "sql" -> new SQLiteStorage(this);
             case "mysql" -> new MySQLStorage(this,
                     getConfig().getString("system.username"),
                     getConfig().getString("system.password"),
@@ -46,6 +46,7 @@ public class HoloExtension extends JavaPlugin {
 
         // Load commands
         //getCommand("he").setExecutor(new TemporaryCommand(this, moduleManager));
+        getCommand("he").setExecutor(new MainCommand(leaderBoardManager));
 
         new GuiListener(new Handler(this), this);
 
