@@ -32,7 +32,7 @@ public class BalTopModule implements DefaultModule{
     @Override
     public void tick(long tick){
 
-        if(tick%10 == 0){
+        if(tick%10 != 0){
             List<LeaderBoardEntry> toAdd = new ArrayList<>();
 
             for (Player player : Bukkit.getOnlinePlayers()) {

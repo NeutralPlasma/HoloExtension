@@ -25,7 +25,7 @@ public class PapiModule implements DefaultModule{
 
     @Override
     public void tick(long tick) {
-        if(tick%10 == 0){
+        if(tick%10 != 0){
             for(Player player : Bukkit.getOnlinePlayers()){
                 storage.addOfflineUser(name, new LeaderBoardEntry(
                         0,
