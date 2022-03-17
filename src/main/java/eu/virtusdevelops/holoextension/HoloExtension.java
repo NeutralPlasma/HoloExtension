@@ -1,6 +1,7 @@
 package eu.virtusdevelops.holoextension;
 
 import eu.virtusdevelops.holoextension.commands.InfoCommand;
+import eu.virtusdevelops.holoextension.commands.MenuCommand;
 import eu.virtusdevelops.holoextension.commands.ReloadCommand;
 import eu.virtusdevelops.holoextension.leaderboards.LeaderBoardManager;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
@@ -12,6 +13,7 @@ import eu.virtusdevelops.virtuscore.command.MainCommand;
 import eu.virtusdevelops.virtuscore.gui.GuiListener;
 import eu.virtusdevelops.virtuscore.gui.Handler;
 import org.bukkit.plugin.java.JavaPlugin;
+
 
 
 public class HoloExtension extends JavaPlugin {
@@ -69,6 +71,7 @@ public class HoloExtension extends JavaPlugin {
     private void loadCommands(){
         MainCommand command = commandManager.addMainCommand("he")
                 .addSubCommand(new ReloadCommand(leaderBoardManager))
+                .addSubCommand(new MenuCommand(leaderBoardManager))
                 .addSubCommand(new InfoCommand(leaderBoardManager));
     }
 

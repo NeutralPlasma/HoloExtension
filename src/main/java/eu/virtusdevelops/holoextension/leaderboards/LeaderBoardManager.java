@@ -187,6 +187,10 @@ public class LeaderBoardManager {
         }
     }
 
+    public List<DefaultModule> getModules() {
+        return modules;
+    }
+
     public Map<String, List<Long>> getTimers() {
         return timers;
     }
