@@ -121,6 +121,30 @@ public class MySQLStorage implements DataStorage {
 
 
     @Override
+    public void addMultipleOffline(String boardName, List<LeaderBoardEntry> data){
+        String SQL = "INSERT INTO `" + tablePrefix + boardName + "`(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?)" +
+                "ON CONFLICT(uuid) DO UPDATE SET value = ?";
+
+        try(Connection connection = hikari.getConnection()){
+            for(LeaderBoardEntry entry : data){
+                PreparedStatement statement = connection.prepareStatement(SQL);
+                statement.setString(1, entry.getPlayer());
+                statement.setString(2, entry.getPrefix());
+                statement.setString(3, entry.getSuffix());
+                statement.setString(4, entry.getUuidPlayer().toString());
+                statement.setDouble(5, entry.getValue());
+                statement.setDouble(6, entry.getValue());
+
+                statement.execute();
+            }
+        }catch (SQLException error){
+            // print error to console
+        }
+
+    }
+
+
+    @Override
     public void addMultiple(String boardName, List<LeaderBoardEntry> data){
         String SQL = "INSERT INTO  " + tablePrefix + boardName + "(name, prefix, suffix, uuid, value) VALUES (?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE name = ?, prefix = ?, suffix = ?, uuid = ?, value = ?";

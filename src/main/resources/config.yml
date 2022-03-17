@@ -10,7 +10,7 @@ version: @version@
 
 system:
   storage_type: "SQL"
-  # SQL, MySQL or FLAT
+  # SQL or MySQL
 
   #mysql configuration
   username: "root"

@@ -10,6 +10,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BalTopModule implements DefaultModule{
     private boolean tickOffline;
     private Economy economy;
@@ -27,20 +30,13 @@ public class BalTopModule implements DefaultModule{
 
 
     @Override
-    public void tick(){
-        for(Player player : Bukkit.getOnlinePlayers()){
-            storage.addUser(name, new LeaderBoardEntry(
-                    0,
-                    player.getUniqueId(),
-                    player.getName(),
-                    economy.getBalance(player),
-                    PlaceholderAPI.setPlaceholders(player, "%vault_prefix%"),
-                    PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
-            ));
-        }
-        if(tickOffline){
-            for(OfflinePlayer player: Bukkit.getOfflinePlayers()){
-                storage.addOfflineUser(name, new LeaderBoardEntry(
+    public void tick(long tick){
+
+        if(tick%10 == 0){
+            List<LeaderBoardEntry> toAdd = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                toAdd.add(new LeaderBoardEntry(
                         0,
                         player.getUniqueId(),
                         player.getName(),
@@ -49,6 +45,38 @@ public class BalTopModule implements DefaultModule{
                         ""
                 ));
             }
+            storage.addMultipleOffline(name, toAdd);
+            toAdd.clear();
+        }else {
+            List<LeaderBoardEntry> toAdd = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                toAdd.add(new LeaderBoardEntry(
+                        0,
+                        player.getUniqueId(),
+                        player.getName(),
+                        economy.getBalance(player),
+                        PlaceholderAPI.setPlaceholders(player, "%vault_prefix%"),
+                        PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
+                ));
+            }
+            storage.addMultiple(name, toAdd);
+            toAdd.clear();
+        }
+        if(tickOffline){
+            List<LeaderBoardEntry> toAdd = new ArrayList<>();
+            for(OfflinePlayer player: Bukkit.getOfflinePlayers()){
+                toAdd.add(new LeaderBoardEntry(
+                        0,
+                        player.getUniqueId(),
+                        player.getName(),
+                        economy.getBalance(player),
+                        "",
+                        ""
+                ));
+            }
+            storage.addMultiple(name, toAdd);
+            toAdd.clear();
         }
     }
 

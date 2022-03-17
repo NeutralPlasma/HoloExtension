@@ -10,7 +10,7 @@ version: 0.1.0.0 Alpha
 
 system:
   storage_type: "SQL"
-  # SQL, MySQL or FLAT
+  # SQL or MySQL
 
   #mysql configuration
   username: "root"

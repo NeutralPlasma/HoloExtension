@@ -58,12 +58,10 @@ dependencies {
         transitive = false
     }
     compileOnly group: "spigotmc", name: "spigot", version: "1.16"
-    compileOnly fileTree(dir: 'libs', include: '*.jar')
 
     implementation group: "eu.virtusdevelops", name: "VirtusCore", version: "1.0.9.6"
     implementation group: 'net.wesjd', name: 'anvilgui', version: '1.5.1-SNAPSHOT'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
-    implementation fileTree(dir: 'included', include: '*.jar')
 }
 
 processResources {

@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LeaderBoardManager {
     private final HoloExtension plugin;
@@ -26,12 +27,17 @@ public class LeaderBoardManager {
 
     private List<CacheItem> toCache = new ArrayList<>();
 
+    private Map<String, List<Long>> timers = new HashMap<>();
+
     private BukkitTask task;
+    private long currentTick = 0;
 
     public LeaderBoardManager(HoloExtension plugin, DataStorage storage) {
         this.plugin = plugin;
         this.storage = storage;
 
+        timers.put("tickCache", new ArrayList<>());
+        timers.put("tickModules", new ArrayList<>());
 
         load();
     }
@@ -69,6 +75,7 @@ public class LeaderBoardManager {
                 storage,
                 plugin.getConfig().getInt("modules.baltop.format")
         ));
+        timers.put("baltop", new ArrayList<>());
 
         // load papi modules
         for(String moduleName : plugin.getConfig().getConfigurationSection("papi").getKeys(false)){
@@ -79,13 +86,17 @@ public class LeaderBoardManager {
                     storage,
                     section.getInt("format")
             ));
+            timers.put(moduleName, new ArrayList<>());
         }
+
+
 
         // start updating task
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::tick, 10L, 400L);
     }
 
-    public void reload(){
+    public long reload(){
+        long time = System.nanoTime();
         task.cancel();
         for(DefaultModule module : modules){
             unregisterPlaceholders(module.getName());
@@ -97,11 +108,14 @@ public class LeaderBoardManager {
 
         // load modules
         load();
+        return (System.nanoTime() - time);
     }
 
     // tick
     public void tick(){
         // go thru cache and cache it
+
+        long time = System.nanoTime();
         List<CacheItem> temp = new ArrayList<>(toCache);
         toCache.clear();
         for(CacheItem item : temp){
@@ -110,9 +124,24 @@ public class LeaderBoardManager {
             //VirtusCore.console().sendMessage("Caching pos: " + item.getPosition() + " on board: " + item.getBoard());
         }
         temp.clear();
+        timers.get("tickCache").add(System.nanoTime() - time);
+        if(timers.get("tickCache").size() > 100)
+            timers.get("tickCache").remove(0);
 
         // tick every module
-        modules.forEach(DefaultModule::tick);
+        time = System.nanoTime();
+        modules.forEach(module -> {
+            long timer2 = System.nanoTime();
+            module.tick(currentTick);
+            timers.get(module.getName()).add(System.nanoTime() - timer2);
+            if(timers.get(module.getName()).size() > 100)
+                timers.get(module.getName()).remove(0);
+        });
+        timers.get("tickModules").add(System.nanoTime() - time); // just cache some timing.
+        if(timers.get("tickModules").size() > 100)
+            timers.get("tickModules").remove(0);
+
+        currentTick++;
     }
 
 
@@ -156,5 +185,9 @@ public class LeaderBoardManager {
             String valuePlaceholder = "he_" + name + "_" + i + "_value";
             HologramsAPI.unregisterPlaceholder(plugin, valuePlaceholder);
         }
+    }
+
+    public Map<String, List<Long>> getTimers() {
+        return timers;
     }
 }

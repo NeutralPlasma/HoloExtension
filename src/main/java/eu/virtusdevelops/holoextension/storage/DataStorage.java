@@ -27,6 +27,7 @@ public interface DataStorage {
 
 
     void addOfflineUser(String boardName, LeaderBoardEntry data);
+    void addMultipleOffline(String boardName, List<LeaderBoardEntry> data);
 
 
     LeaderBoardEntry getData(String boardName, int position);

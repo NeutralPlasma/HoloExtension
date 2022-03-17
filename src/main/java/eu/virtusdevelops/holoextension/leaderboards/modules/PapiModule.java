@@ -24,17 +24,32 @@ public class PapiModule implements DefaultModule{
 
 
     @Override
-    public void tick() {
-        for(Player player : Bukkit.getOnlinePlayers()){
-            storage.addUser(name, new LeaderBoardEntry(
-                    0,
-                    player.getUniqueId(),
-                    player.getName(),
-                    Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
-                    PlaceholderAPI.setPlaceholders(player, "%vault_prefix%"),
-                    PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
-            ));
+    public void tick(long tick) {
+        if(tick%10 == 0){
+            for(Player player : Bukkit.getOnlinePlayers()){
+                storage.addOfflineUser(name, new LeaderBoardEntry(
+                        0,
+                        player.getUniqueId(),
+                        player.getName(),
+                        Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
+                        "",
+                        ""
+                ));
+            }
+        }else{
+            for(Player player : Bukkit.getOnlinePlayers()){
+                storage.addUser(name, new LeaderBoardEntry(
+                        0,
+                        player.getUniqueId(),
+                        player.getName(),
+                        Double.parseDouble(PlaceholderAPI.setPlaceholders(player, name)),
+                        PlaceholderAPI.setPlaceholders(player, "%vault_prefix%"),
+                        PlaceholderAPI.setPlaceholders(player, "%vault_suffix%")
+                ));
+            }
         }
+
+
 
 
         if(tickOffline){
