@@ -26,8 +26,7 @@ public class LeaderBoardManager {
     private HashMap<String, HashMap<Integer, Long>> refreshes = new HashMap<>(); // store values when each slot was last refreshed.
 
     private List<CacheItem> toCache = new ArrayList<>();
-
-    private Map<String, List<Long>> timers = new HashMap<>();
+    private Map<String, List<Long>> timers = new HashMap<>(); // just info stuff.
 
     private BukkitTask task;
     private long currentTick = 0;
@@ -59,7 +58,6 @@ public class LeaderBoardManager {
 
         if(refreshes.get(board).containsKey(position)){
             if(System.currentTimeMillis() - refreshes.get(board).get(position) > 25000){
-                //VirtusCore.console().sendMessage("Caching new user");
                 refreshes.get(board).put(position, System.currentTimeMillis());
                 toCache.add(new CacheItem(position, board));
             }
@@ -144,6 +142,24 @@ public class LeaderBoardManager {
         currentTick++;
     }
 
+
+    public void registerNewModule(ModuleData data){
+        PapiModule module = new PapiModule(
+                data.isUpdateOffline(),
+                data.getPlaceholder(),
+                storage,
+                data.getFormat()
+        );
+        // store data to config
+        plugin.getConfig().set("papi." + data.getPlaceholder() + ".updateOffline", data.isUpdateOffline());
+        plugin.getConfig().set("papi." + data.getPlaceholder() + ".format", data.getFormat());
+        plugin.getConfig().set("papi." + data.getPlaceholder() + ".enabled", true);
+        plugin.saveConfig();
+        timers.put(data.getPlaceholder(), new ArrayList<>());
+        timers.get(data.getPlaceholder()).add(0L);
+
+        registerLeaderboard(module);
+    }
 
 
     public void registerLeaderboard(DefaultModule module){

@@ -47,10 +47,28 @@ public class MainGUI {
             icons.add(icon);
         }
         inventory.setIcons(icons);
+        staticIcons();
 
         inventory.page();
     }
 
+
+    private void staticIcons(){
+        // pre-made leaderboards menu
+        ItemStack premade = new ItemStack(Material.CHEST);
+        premade = ItemUtils.setName(premade, TextUtils.colorFormat("&8[&bPremade leaderboards&8]"));
+        premade = ItemUtils.setLore(premade, TextUtils.colorFormatList(List.of("&7Click to see all premade leaderboards")));
+        Icon premadeIcon = new Icon(premade);
+        premadeIcon.addClickAction((player) -> {
+           new PremadeModulesGUI(player, manager);
+        });
+        inventory.addIcon(52, premadeIcon);
+
+
+        // create new leaderboard menu
+
+
+    }
 
     private long getAverage(List<Long> times){
         int count = 0;
