@@ -39,7 +39,7 @@ public class LeaderBoardEntry {
     }
 
     public String getPrefix() {
-        return prefix;
+        return eu.virtusdevelops.virtuscore.utils.TextUtils.colorFormat(prefix);
     }
 
     public String getSuffix() {
