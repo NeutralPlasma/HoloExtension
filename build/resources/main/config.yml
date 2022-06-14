@@ -6,7 +6,7 @@
 # for each placeholder replace # with position for example
 # {he-baltop-1-user} {he-baltop-2-user} {he-baltop-3-user}
 
-version: 0.1.0.0 Alpha
+version: 0.1.0.1 Alpha
 
 system:
   storage_type: "SQL"
@@ -19,6 +19,16 @@ system:
   port: 3306
   useSSL: false
   database: "example"
+
+  # async caching stuff
+  # amount of async tasks:
+  async-tasks: 10
+
+
+#
+# Enable this if you have ProtocolLib installed and papi placeholders don't work
+#
+protocollib: false
 
 modules:
   # baltop module

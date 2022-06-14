@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'eu.virtusdevelops'
-version '0.1.0.0 Alpha'
+version '0.1.0.1 Alpha'
 
 repositories {
     mavenCentral()
@@ -47,7 +47,7 @@ repositories {
 
 dependencies {
     compileOnly group: 'junit', name: 'junit', version: '4.12'
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.0"
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.8.0"
     compileOnly 'me.clip:placeholderapi:2.11.1'
     compileOnly group: 'com.gmail.filoghost.holographicdisplays', name: 'holographicdisplays-api', version: '2.4.9'
 

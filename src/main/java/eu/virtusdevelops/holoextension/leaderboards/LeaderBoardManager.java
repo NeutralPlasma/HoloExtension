@@ -6,8 +6,6 @@ import eu.virtusdevelops.holoextension.leaderboards.modules.BalTopModule;
 import eu.virtusdevelops.holoextension.leaderboards.modules.DefaultModule;
 import eu.virtusdevelops.holoextension.leaderboards.modules.PapiModule;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
-import eu.virtusdevelops.virtuscore.VirtusCore;
-import eu.virtusdevelops.virtuscore.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitTask;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public class LeaderBoardManager {
     private final HoloExtension plugin;
@@ -29,6 +28,7 @@ public class LeaderBoardManager {
     private Map<String, List<Long>> timers = new HashMap<>(); // just info stuff.
 
     private BukkitTask task;
+
     private long currentTick = 0;
 
     public LeaderBoardManager(HoloExtension plugin, DataStorage storage) {
@@ -37,6 +37,13 @@ public class LeaderBoardManager {
 
         timers.put("tickCache", new ArrayList<>());
         timers.put("tickModules", new ArrayList<>());
+
+        // VALIDATE CONFIG
+        if (plugin.getConfig().getInt("system.async-tasks") <= 0){
+            plugin.getLogger().severe("INVALID CONFIGURATION FOR system.async-tasks, NUMBER HAS TO BE GREATER THAN 0!");
+            plugin.getPluginLoader().disablePlugin(plugin);
+            return;
+        }
 
         load();
     }
@@ -93,6 +100,17 @@ public class LeaderBoardManager {
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::tick, 10L, 400L);
     }
 
+    public void disable(){
+        task.cancel();
+        for(DefaultModule module : modules){
+            unregisterPlaceholders(module.getName());
+        }
+        modules.clear();
+        refreshes.clear();
+        leaderboards.clear();
+        toCache.clear();
+    }
+
     public long reload(){
         long time = System.nanoTime();
         task.cancel();
@@ -109,32 +127,71 @@ public class LeaderBoardManager {
         return (System.nanoTime() - time);
     }
 
+
+    // somehow split cache list to amount of tasks that are supposed to be executed and offset them?
+
+    // tick cache
+    public void tickCache(int amount){
+
+        final int G = plugin.getConfig().getInt("system.async-tasks"); // NOT GOOD IDEA HAHA
+        final int NG = (toCache.size() + G - 1) / G;
+
+        List<List<CacheItem>> result = IntStream.range(0, NG)
+                .mapToObj(i -> toCache.subList(G * i, Math.min(G * i + G, toCache.size()))).toList();
+
+        toCache.clear();
+
+        for(List<CacheItem> chunk : result){
+
+            // not sure if this is good or no :shrug:
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, (Runnable) -> {
+
+                for(CacheItem item : chunk){
+                    leaderboards.get(item.getBoard()).put(
+                            item.getPosition(),
+                            storage.getData(item.getBoard(), item.getPosition()
+                    ));
+                    refreshes.get(item.getBoard()).put(item.getPosition(), System.currentTimeMillis());
+                }
+            }, amount * 10L);
+        }
+    }
+
+
     // tick
     public void tick(){
         // go thru cache and cache it
 
+        tickCache(plugin.getConfig().getInt("system.async-tasks"));
+
         long time = System.nanoTime();
-        List<CacheItem> temp = new ArrayList<>(toCache);
+        /*List<CacheItem> temp = new ArrayList<>(toCache);
         toCache.clear();
         for(CacheItem item : temp){
             leaderboards.get(item.getBoard()).put(item.getPosition(),storage.getData(item.getBoard(), item.getPosition()));
             refreshes.get(item.getBoard()).put(item.getPosition(), System.currentTimeMillis());
             //VirtusCore.console().sendMessage("Caching pos: " + item.getPosition() + " on board: " + item.getBoard());
         }
-        temp.clear();
+        temp.clear();*/
         timers.get("tickCache").add(System.nanoTime() - time);
         if(timers.get("tickCache").size() > 100)
             timers.get("tickCache").remove(0);
 
         // tick every module
         time = System.nanoTime();
-        modules.forEach(module -> {
-            long timer2 = System.nanoTime();
-            module.tick(currentTick);
-            timers.get(module.getName()).add(System.nanoTime() - timer2);
-            if(timers.get(module.getName()).size() > 100)
-                timers.get(module.getName()).remove(0);
-        });
+        int number = 20;
+
+        for(DefaultModule module : modules){
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, (Runnable) -> {
+                long timer2 = System.nanoTime();
+                module.tick(currentTick);
+                timers.get(module.getName()).add(System.nanoTime() - timer2);
+                if(timers.get(module.getName()).size() > 100)
+                    timers.get(module.getName()).remove(0);
+            }, number);
+            number+=20;
+        }
+
         timers.get("tickModules").add(System.nanoTime() - time); // just cache some timing.
         if(timers.get("tickModules").size() > 100)
             timers.get("tickModules").remove(0);
@@ -171,16 +228,16 @@ public class LeaderBoardManager {
         // init placeholders
         for(int i = 1; i <= 10; i++){
             int finalI = i;
-            String namePlaceholder = "he_" + module.getNameFormated() + "_" + i + "_name";
+            String namePlaceholder = "{he_" + module.getNameFormated() + "_" + i + "_name}";
             HologramsAPI.registerPlaceholder(plugin, namePlaceholder, 10, () -> getData(module.getName(), finalI).getPlayer());
 
-            String prefixPlaceholder = "he_" + module.getNameFormated() + "_" + i + "_prefix";
+            String prefixPlaceholder = "{he_" + module.getNameFormated() + "_" + i + "_prefix}";
             HologramsAPI.registerPlaceholder(plugin, prefixPlaceholder, 10, () -> getData(module.getName(), finalI).getPrefix());
 
-            String suffixPlaceholder = "he_" + module.getNameFormated() + "_" + i + "_suffix";
+            String suffixPlaceholder = "{he_" + module.getNameFormated() + "_" + i + "_suffix}";
             HologramsAPI.registerPlaceholder(plugin, suffixPlaceholder, 10, () -> getData(module.getName(), finalI).getSuffix());
 
-            String valuePlaceholder = "he_" + module.getNameFormated() + "_" + i + "_value";
+            String valuePlaceholder = "}he_" + module.getNameFormated() + "_" + i + "_value}";
             HologramsAPI.registerPlaceholder(plugin, valuePlaceholder, 10, () -> getData(module.getName(), finalI).getFormated(module.getFormat()));
 
         }
@@ -189,16 +246,16 @@ public class LeaderBoardManager {
 
     public void unregisterPlaceholders(String name){
         for(int i = 1; i <= 10; i++){
-            String namePlaceholder = "he_" + name + "_" + i + "_name";
+            String namePlaceholder = "{he_" + name + "_" + i + "_name}";
             HologramsAPI.unregisterPlaceholder(plugin, namePlaceholder);
 
-            String prefixPlaceholder = "he_" + name + "_" + i + "_prefix";
+            String prefixPlaceholder = "{he_" + name + "_" + i + "_prefix}";
             HologramsAPI.unregisterPlaceholder(plugin, prefixPlaceholder);
 
-            String suffixPlaceholder = "he_" + name + "_" + i + "_suffix";
+            String suffixPlaceholder = "{he_" + name + "_" + i + "_suffix}";
             HologramsAPI.unregisterPlaceholder(plugin, suffixPlaceholder);
 
-            String valuePlaceholder = "he_" + name + "_" + i + "_value";
+            String valuePlaceholder = "{he_" + name + "_" + i + "_value}";
             HologramsAPI.unregisterPlaceholder(plugin, valuePlaceholder);
         }
     }

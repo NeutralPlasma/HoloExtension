@@ -20,6 +20,16 @@ system:
   useSSL: false
   database: "example"
 
+  # async caching stuff
+  # amount of async tasks:
+  async-tasks: 10
+
+
+#
+# Enable this if you have ProtocolLib installed and papi placeholders don't work
+#
+protocollib: false
+
 modules:
   # baltop module
   # placeholders:
