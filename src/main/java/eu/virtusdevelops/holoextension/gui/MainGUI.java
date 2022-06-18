@@ -77,6 +77,9 @@ public class MainGUI {
             count++;
             max += time;
         }
+        if(count < 1){
+            return 0L;
+        }
         return max / count;
     }
 }

@@ -6,14 +6,12 @@ import eu.virtusdevelops.holoextension.leaderboards.modules.BalTopModule;
 import eu.virtusdevelops.holoextension.leaderboards.modules.DefaultModule;
 import eu.virtusdevelops.holoextension.leaderboards.modules.PapiModule;
 import eu.virtusdevelops.holoextension.storage.DataStorage;
+import eu.virtusdevelops.virtuscore.VirtusCore;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class LeaderBoardManager {
@@ -130,21 +128,32 @@ public class LeaderBoardManager {
 
     // somehow split cache list to amount of tasks that are supposed to be executed and offset them?
 
+    public static ArrayList<ArrayList<CacheItem>> chunks(List<CacheItem> bigList,int n){
+        ArrayList<ArrayList<CacheItem>> chunks = new ArrayList<ArrayList<CacheItem>>();
+
+        for (int i = 0; i < bigList.size(); i += n) {
+            ArrayList<CacheItem> chunk = new ArrayList<>(bigList.subList(i, Math.min(bigList.size(), i + n)));
+            chunks.add(chunk);
+        }
+
+        return chunks;
+    }
+
+
     // tick cache
     public void tickCache(int amount){
 
-        final int G = plugin.getConfig().getInt("system.async-tasks"); // NOT GOOD IDEA HAHA
+        final int G = plugin.getConfig().getInt("system.async-tasks");
         final int NG = (toCache.size() + G - 1) / G;
 
-        List<List<CacheItem>> result = IntStream.range(0, NG)
-                .mapToObj(i -> toCache.subList(G * i, Math.min(G * i + G, toCache.size()))).toList();
+        ArrayList<ArrayList<CacheItem>> result = chunks(toCache, NG);
 
         toCache.clear();
 
         for(List<CacheItem> chunk : result){
 
             // not sure if this is good or no :shrug:
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, (Runnable) -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
                 for(CacheItem item : chunk){
                     leaderboards.get(item.getBoard()).put(
@@ -153,7 +162,9 @@ public class LeaderBoardManager {
                     ));
                     refreshes.get(item.getBoard()).put(item.getPosition(), System.currentTimeMillis());
                 }
-            }, amount * 10L);
+                chunk.clear();
+
+            }, amount + 10L);
         }
     }
 
@@ -237,7 +248,7 @@ public class LeaderBoardManager {
             String suffixPlaceholder = "{he_" + module.getNameFormated() + "_" + i + "_suffix}";
             HologramsAPI.registerPlaceholder(plugin, suffixPlaceholder, 10, () -> getData(module.getName(), finalI).getSuffix());
 
-            String valuePlaceholder = "}he_" + module.getNameFormated() + "_" + i + "_value}";
+            String valuePlaceholder = "{he_" + module.getNameFormated() + "_" + i + "_value}";
             HologramsAPI.registerPlaceholder(plugin, valuePlaceholder, 10, () -> getData(module.getName(), finalI).getFormated(module.getFormat()));
 
         }

@@ -19,6 +19,7 @@ public class BalTopModule implements DefaultModule{
     private String name = "baltop";
     private DataStorage storage;
     private int format;
+    private boolean reqs = true;
 
 
     public BalTopModule(boolean tickOffline, DataStorage storage, int format) {
@@ -26,11 +27,16 @@ public class BalTopModule implements DefaultModule{
         this.tickOffline = tickOffline;
         this.storage = storage;
         this.format = format;
+
+        if(this.economy == null){
+            reqs = false;
+        }
     }
 
 
     @Override
     public void tick(long tick){
+        if(!reqs) return;
 
         if(tick%10 != 0){
             List<LeaderBoardEntry> toAdd = new ArrayList<>();
